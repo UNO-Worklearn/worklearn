@@ -1,33 +1,103 @@
-.landing-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    background: url('../../images/RAISE_Hero_1920x1280.svg') center center no-repeat;
-    background-size: cover;
-    width: 100vw;
-    height: 100vh;
-    font-family: Arial, sans-serif;
+/* Full page container */
+.home-container {
+  padding: 50px;
+  text-align: start;
 }
 
-.header {
+/* Responsive video */
+.intro-video {
+  width: 100%;
+  max-width: 850px;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Center wrapper for video section */
+.video-wrapper {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.watch-message {
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.signup-button {
+  margin-top: 20px !important;
+  font-size: 18px !important;
+}
+
+/* Responsive welcome image */
+.dashboard-img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
+  border-radius: 12px;
+}
+
+/* Text section */
+.home-text-section {
+  padding: 50px 100px;
+}
+
+.home-title {
+  font-size: 2rem;
+}
+
+.home-paragraph {
+  color: black;
+  margin-top: 20px;
+  font-size: 1rem;
+  line-height: 1.6rem;
+}
+
+/* ------------------------------------------------------------------
+   MOBILE RESPONSIVE DESIGN
+------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: 20px;
+  }
+
+  .home-text-section {
+    padding: 20px;
+  }
+
+  .home-title {
+    font-size: 1.4rem;
     text-align: center;
-    margin-bottom: 20px;
-}
+  }
 
-.main-content {
+  .home-paragraph {
+    font-size: 0.95rem;
+    line-height: 1.4rem;
     text-align: center;
+  }
+
+  .intro-video {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .signup-button {
+    font-size: 16px !important;
+    width: 90%;
+  }
 }
 
-img {
-    width: 200px;
-    /* Adjust as needed */
-    height: 200px;
-    /* Adjust as needed */
-    margin-bottom: 20px;
-}
+@media (max-width: 480px) {
+  .home-title {
+    font-size: 1.2rem;
+  }
 
-.footer {
-    text-align: center;
-    margin-top: 20px;
+  .home-paragraph {
+    font-size: 0.85rem;
+  }
+
+  .signup-button {
+    font-size: 14px !important;
+  }
 }

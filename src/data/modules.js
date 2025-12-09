@@ -89,29 +89,70 @@ const data = [
               `,
         },
         {
+
           id: 5,
           name: "Troubleshooting",
           content: `
-              <div class="troubleshooting">
-              <p>This is where we will post about known errors (called bugs) on the page.</p>
-              <h3 style="font-weight: 700">Date: 8 Feb 2024</h3>
-              <p>Problem/bug: Quiz scores are incorrect in most of accounts.</p>
-              <p>Status: Resolved</p>
-              <p>Problem/bug: The site is down for some computers/laptops.</p>
-              <p>Status: Resolved</p>
+            <div class="troubleshooting">
+              <p>
+                Welcome to the Troubleshooting page. Here you will find updates about known issues 
+                (also called bugs), along with their current status. We regularly monitor and resolve 
+                problems to ensure your experience is smooth.
+              </p>
+        
+              <h3 style="font-weight: 700; margin-top: 30px;">Date: 8 Feb 2024</h3>
+              <p><strong>Issue:</strong> Quiz scores were incorrect for many accounts.</p>
+              <p><strong>Status:</strong> Resolved</p>
+        
+              <p><strong>Issue:</strong> The site was unavailable for some devices.</p>
+              <p><strong>Status:</strong> Resolved</p>
+        
               <hr/>
-              <h3 style="font-weight: 700">Date: 6 Feb 2024</h3>
-              <p>Problem/bug: Some accounts are unable to login, and the site is down for some computers/laptops.</p>
+        
+              <h3 style="font-weight: 700; margin-top: 30px;">Date: 6 Feb 2024</h3>
+              <p><strong>Issue:</strong> Several users could not log in, and the site was down on some computers.</p>
+              <p><strong>Status:</strong> Under review</p>
+        
               <hr/>
-              <h3 style="font-weight: 700">Date: 4 Feb 2024</h3>
-              <p>No known bugs</p>
-              </div>
-              <style>
+        
+              <h3 style="font-weight: 700; margin-top: 30px;">Date: 4 Feb 2024</h3>
+              <p>No known issues on this date.</p>
+        
+              <hr/>
+        
+              <h3 style="font-weight: 700; margin-top: 40px;">Need Help?</h3>
+              <p>
+                If you experience a problem that is not listed here, or if you need assistance, please reach out:
+              </p>
+        
+              <p>
+                <strong>Support Contact:</strong><br/>
+                Magie Hall, Ph.D.<br/>
+                <a href="mailto:mahall@unomaha.edu">mahall@unomaha.edu</a>
+              </p>
+        
+              <p>
+                We’re here to help! Please include as much detail as possible screenshots, error messages, 
+                and what you were doing when the issue occurred greatly helps us troubleshoot quickly.
+              </p>
+            </div>
+        
+            <style>
               .troubleshooting p, .troubleshooting h3 {
-                margin-top: 20px;
+                margin-top: 18px;
+                line-height: 1.6;
               }
-              </style>
-              `,
+              .troubleshooting a {
+                color: #0056b3;
+                text-decoration: none;
+              }
+              .troubleshooting a:hover {
+                text-decoration: underline;
+              }
+            </style>
+          `,
+
+
         },
         //       {
         //         id: 3,
