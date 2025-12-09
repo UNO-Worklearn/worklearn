@@ -73,14 +73,8 @@ function App() {
           }
         />
 
-        <Route
-          path="/playground"
-          element={
-            <ProtectedRoute user={user}>
-              <Playground />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/playground" element={<Playground />} />
+
 
         <Route
           path="/student-details/:userId"

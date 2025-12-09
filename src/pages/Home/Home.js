@@ -39,33 +39,36 @@ function Home({ user }) {
   return (
     <Box className="home-container">
 
-      {/* Show video ONLY when user is not logged in */}
+      {/* Show video ONLY when user is NOT logged in */}
       {!user && (
-        <Box className="video-wrapper">
-          <video
-            ref={videoRef}
-            src="/videos/Intro Program.mp4"
-            autoPlay
-            muted           // REQUIRED for mobile autoplay
-            playsInline     // REQUIRED for iOS autoplay
-            controls={false}
-            onEnded={handleVideoEnd}
-            onContextMenu={(e) => e.preventDefault()} // disable right-click
-            className="intro-video"
-          />
+        <Box className="video-wrapper" style={{ textAlign: "center" }}>
 
           {!showSignup && (
-            <Typography className="watch-message">
+            <Typography className="watch-message" style={{ marginBottom: "10px", fontStyle: "italic" }}>
               Please watch the full video to unlock sign up.
             </Typography>
           )}
 
+          {/* Video */}
+          <video
+            ref={videoRef}
+            src="/videos/intro_program.mp4"
+            controls
+            controlsList="nodownload noplaybackrate"
+            disablePictureInPicture
+            onEnded={handleVideoEnd}
+            className="intro-video"
+            style={{ width: "100%", maxWidth: "800px", borderRadius: "12px" }}
+          ></video>
+
+          {/* Signup Button */}
           {showSignup && (
             <Button
               variant="contained"
               color="primary"
               href="/register"
               className="signup-button"
+              style={{ marginTop: "20px" }}
             >
               Create Your Account
             </Button>
@@ -73,15 +76,8 @@ function Home({ user }) {
         </Box>
       )}
 
-      {/* Welcome Image */}
-      <img
-        src="/images/welcome.png"
-        alt="Landing Page"
-        className="dashboard-img"
-      />
-
-      {/* Main Page Text */}
-      <Box className="home-text-section">
+      {/* Main Page Content */}
+      <Box className="home-text-section" style={{ paddingTop: "40px" }}>
         <Typography variant="h4" gutterBottom className="home-title">
           Welcome to the Work-Learn Project!
         </Typography>
