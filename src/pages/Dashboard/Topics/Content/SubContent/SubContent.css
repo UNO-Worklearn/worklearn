@@ -1,0 +1,31 @@
+.navigate {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.subcontent-section {
+    font-weight: 400
+}
+
+/* CSS styles for the link button */
+.next-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #D71920;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.next-button:hover {
+    background-color: #af2025;
+    color: #fff;
+}
+
+.next-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #e7343a;
+}

@@ -1,0 +1,21 @@
+.login-head {
+    margin: 50px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.google-button:hover {
+    background-color: #5b95f3;
+    color: #fff;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    margin-right: 10px;
+}
+
+.login-as {
+    padding: 20px;
+    margin: auto;
+}

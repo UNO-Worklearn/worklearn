@@ -1,0 +1,64 @@
+.content-section {
+    padding: 100px 200px;
+    text-align: start;
+}
+
+.content-section p {
+    color: black;
+}
+
+.content-header {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid black;
+    padding-bottom: 50px;
+}
+
+.content-head {
+    font-size: 2.25em;
+    padding-bottom: 20px;
+}
+
+.content-subhead {
+    display: flex;
+    width: 100%;
+    gap: 0 10px;
+    padding-bottom: 10px;
+    font-size: 0.85em;
+}
+
+.content {
+    padding: 20px 0;
+}
+
+.content-body ul {
+    padding: 30px;
+}
+
+.content-body a {
+    text-decoration: underline;
+}
+
+
+/* CSS styles for the link button */
+.next-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #D71920;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.next-button:hover {
+    background-color: #af2025;
+    color: #fff;
+}
+
+.next-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #e7343a;
+}

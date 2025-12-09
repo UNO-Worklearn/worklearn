@@ -1,0 +1,11 @@
+.cobol-columns {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-column-start: auto;
+}
+
+textarea {
+    font-family: monospace;
+    font-size: 1.25em;
+    height: 85vh;
+}

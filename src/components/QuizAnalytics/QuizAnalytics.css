@@ -1,0 +1,28 @@
+/* Ensure table headers and content are centered */
+.MuiTableCell-root {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 4px 0px !important; 
+  }
+
+  /* Style for table headers */
+  .MuiTableHead-root .MuiTableCell-root {
+    font-weight: bold !important;
+    font-size: 14px !important;
+  }
+  
+  /* Add extra spacing between rows */
+  .MuiTableRow-root {
+    height: 50px !important; /* Adjust height for better readability */
+  }
+  
+  /* Fix alignment for icons and controls */
+  .MuiTableToolbar-root {
+    padding: 5px !important;
+  }
+  .MuiTableRow-root:hover .username-hover {
+    background-color: #e3f2fd !important;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+  
