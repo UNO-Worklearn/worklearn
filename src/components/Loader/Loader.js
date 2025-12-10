@@ -22,7 +22,7 @@ function Loader() {
       <div class="loader-inner">
         <div class="loader-blocks">
           <img
-            src="https://www.unomaha.edu/university-communications/downloadables/campus-icon-the-o/uno-icon-color.png"
+            src="/images/uno-logo.png"
             alt="uno logo"
           />
         </div>
