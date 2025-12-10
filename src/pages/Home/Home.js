@@ -52,7 +52,7 @@ function Home({ user }) {
           {/* Video */}
           <video
             ref={videoRef}
-            src="/videos/intro_program.mp4"
+            src="/videos/Intro%20Program.mp4"
             controls
             controlsList="nodownload noplaybackrate"
             disablePictureInPicture
