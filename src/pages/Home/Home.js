@@ -1,11 +1,18 @@
 import { Box, Typography, Button } from "@mui/material";
 import { connect } from "react-redux";
 import React, { useRef, useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";  // <-- NEW
 import "./Home.css";
 
 function Home({ user }) {
   const videoRef = useRef(null);
   const [showSignup, setShowSignup] = useState(false);
+  const [videoReady, setVideoReady] = useState(false); // <-- FIX missing state
+
+  // 🔥 NEW: Redirect logged-in users to dashboard
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // Prevent fast-forwarding
   useEffect(() => {
@@ -52,12 +59,18 @@ function Home({ user }) {
           {/* Video */}
           <video
             ref={videoRef}
-            src="/videos/Intro%20Program.mp4"
-            controls
-            controlsList="nodownload noplaybackrate"
+            src="/videos/IntroProgram.mp4"
+            preload="auto"
+            playsInline
+            muted
+            autoPlay
+            controls={false}
             disablePictureInPicture
+            controlsList="nodownload noplaybackrate noremoteplayback"
+            onCanPlayThrough={() => setVideoReady(true)}
             onEnded={handleVideoEnd}
-            className="intro-video"
+            onContextMenu={(e) => e.preventDefault()} // disable right-click menu
+            className={`intro-video ${videoReady ? "show" : ""}`}
             style={{ width: "100%", maxWidth: "800px", borderRadius: "12px" }}
           ></video>
 
