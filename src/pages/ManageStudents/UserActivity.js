@@ -20,7 +20,7 @@ const UserActivity = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper: format seconds as "Xm Ys"
+  // Format seconds nicely
   const formatSeconds = (secs) => {
     if (secs == null) return "—";
     const s = Number(secs);
@@ -56,11 +56,14 @@ const UserActivity = () => {
     fetchData();
   }, [userId]);
 
-  // 🔹 Flatten activityLogs → per-attempt rows
+  // ---------------------------------------------
+  // 🔥 BUILD QUIZ ATTEMPT ROWS
+  // ---------------------------------------------
   const attemptRows = [];
+
   activityLogs.forEach((log) => {
     const date = log.date;
-    const quizzes = log.quizzes || [];
+    const quizzes = log.quizzes || []; // ← FIXED: read new quizzes[] array
 
     quizzes.forEach((quiz) => {
       const scores = quiz.scores || [];
@@ -68,27 +71,21 @@ const UserActivity = () => {
       const attempts = scores.length;
 
       for (let i = 0; i < attempts; i++) {
-        const score = scores[i];
-        const time = times[i] ?? null;
-        const attemptNumber = i + 1;
-        const reached80OnThisAttempt =
-          quiz.reached80Percent &&
-          quiz.attemptsToReach80 &&
-          quiz.attemptsToReach80 === attemptNumber;
-
         attemptRows.push({
           date,
           type: quiz.type,
-          attemptNumber,
-          score,
-          timeSpent: time,
-          reached80OnThisAttempt,
+          attemptNumber: i + 1,
+          score: scores[i],
+          timeSpent: times[i] ?? null,
+          reached80OnThisAttempt:
+            quiz.reached80Percent &&
+            quiz.attemptsToReach80 === i + 1,
         });
       }
     });
   });
 
-  // Sort by date (newest first), then attemptNumber
+  // Sort newest → oldest
   attemptRows.sort((a, b) => {
     if (a.date === b.date) {
       return b.attemptNumber - a.attemptNumber;
@@ -98,13 +95,7 @@ const UserActivity = () => {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          padding: 4,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <Box sx={{ padding: 4, display: "flex", justifyContent: "center" }}>
         <CircularProgress />
       </Box>
     );
@@ -138,7 +129,7 @@ const UserActivity = () => {
                 <TableCell><strong>Attempt #</strong></TableCell>
                 <TableCell><strong>Score (%)</strong></TableCell>
                 <TableCell><strong>Time Spent</strong></TableCell>
-                <TableCell><strong>Reached 80% on this attempt?</strong></TableCell>
+                <TableCell><strong>Reached 80%?</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
