@@ -49,49 +49,52 @@ function Home({ user }) {
     <Box className="home-container">
 
       {/* Video section only for logged-out users */}
-      <Box className="video-wrapper" style={{ textAlign: "center" }}>
+      <Box className="video-wrapper" style={{textAlign: "center"}}>
 
         {!showSignup && (
-          <Typography
-            className="watch-message"
-            style={{ marginBottom: "10px", fontStyle: "italic" }}
-          >
-            Please watch the full video to unlock sign up.
-          </Typography>
+            <Typography
+                className="watch-message"
+                style={{marginBottom: "10px", fontStyle: "italic"}}
+            >
+              Please watch the full video to unlock sign up.
+            </Typography>
         )}
 
-        <video
-          ref={videoRef}
-          src="/videos/IntroProgram.mp4"
-          preload="auto"
-          playsInline
-          muted
-          autoPlay
-          controls={false}
-          disablePictureInPicture
-          controlsList="nodownload noplaybackrate noremoteplayback"
-          onCanPlayThrough={() => setVideoReady(true)}
-          onEnded={handleVideoEnd}
-          onContextMenu={(e) => e.preventDefault()} // disable right-click
-          className={`intro-video ${videoReady ? "show" : ""}`}
-          style={{ width: "100%", maxWidth: "800px", borderRadius: "12px" }}
-        ></video>
+          <video
+              ref={videoRef}
+              preload="auto"
+              playsInline
+              muted
+              autoPlay
+              controls={false}
+              disablePictureInPicture
+              controlsList="nodownload noplaybackrate noremoteplayback"
+              onCanPlayThrough={() => setVideoReady(true)}
+              onEnded={handleVideoEnd}
+              onContextMenu={(e) => e.preventDefault()}
+              className={`intro-video ${videoReady ? "show" : ""}`}
+              style={{width: "100%", maxWidth: "800px", borderRadius: "12px"}}
+          >
+            <source src="/videos/IntroProgram.webm" type="video/webm"/>
+
+            Your browser does not support the video tag.
+          </video>
 
         {showSignup && (
-          <Button
-            variant="contained"
-            color="primary"
-            href="/register"
-            className="signup-button"
-            style={{ marginTop: "20px" }}
-          >
-            Create Your Account
-          </Button>
+            <Button
+                variant="contained"
+                color="primary"
+                href="/register"
+                className="signup-button"
+                style={{marginTop: "20px"}}
+            >
+              Create Your Account
+            </Button>
         )}
       </Box>
 
       {/* Main text content */}
-      <Box className="home-text-section" style={{ paddingTop: "40px" }}>
+      <Box className="home-text-section" style={{paddingTop: "40px"}}>
         <Typography variant="h4" gutterBottom className="home-title">
           Welcome to the Work-Learn Project!
         </Typography>
