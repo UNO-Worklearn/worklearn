@@ -5,6 +5,10 @@
  *  Objective: Building a quiz feature for students to complete quizzes on our own application
  *
  */
+/**
+ *  Quiz Component (Updated)
+ *  Tracks quiz attempts, scores, time spent, and logs quiz activity
+ */
 
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -45,18 +49,8 @@ const Quiz = ({
   quizScore,
 }) => {
   const [newQuestions, setNewQuestions] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState(
-    Array(questions.length).fill(null)
-  );
-  const [questionIndex, setQuestionIndex] = useState(null);
-  const [selectedOptionsMC, setSelectedOptionsMC] = useState([
-    false,
-    false,
-    false,
-    false,
-  ]);
-
-  const [userResponseMC, setUserResponseMC] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedOptionsMC, setSelectedOptionsMC] = useState([]);
   const [userResponsesMC, setUserResponsesMC] = useState([]);
 
   const [score, setScore] = useState(0);
@@ -66,86 +60,65 @@ const Quiz = ({
 
   const { id, topicId, contentId } = useParams();
 
-  // 🔹 Track when quiz started (for time spent)
+  /** 🔹 Track when quiz started */
   const [startTime] = useState(Date.now());
 
-  // 🔹 After submit, send scores to /api/users/quiz (existing behavior)
+  /** 🔹 Send score to existing `/api/users/quiz` route (updates *_Score fields) */
   useEffect(() => {
-    const updateQuizScoreState = async () => {
-      if (score > 0) {
-        await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/api/users/quiz`,
-          {
-            quizScore,
-            type,
-            user_id: localStorage.getItem("userID"),
-          },
-          { withCredentials: true }
-        );
-      }
+    if (!submitted || score <= 0) return;
+
+    const sendScore = async () => {
+      await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/quiz`,
+        {
+          quizScore,
+          type,
+          user_id: localStorage.getItem("userID"),
+        },
+        { withCredentials: true }
+      );
     };
-    if (submitted) {
-      updateQuizScoreState();
-    }
-  }, [submitted, quizScore, type, score]);
 
-  // 🔹 Decide which score field to update in Redux
+    sendScore();
+  }, [submitted, score, quizScore, type]);
+
+  /** 🔹 Map quiz type to database field */
   useEffect(() => {
-    if (type === "decomposition") {
-      setQuizType("decompositionScore");
-    } else if (type === "pattern-recognition") {
-      setQuizType("patternScore");
-    } else if (type === "abstraction") {
-      setQuizType("abstractionScore");
-    } else if (type === "algorithms") {
-      setQuizType("algorithmScore");
-    } else if (type === "intro") {
-      setQuizType("introScore");
-    } else if (type === "python1") {
-      setQuizType("pythonOneScore");
-    } else if (type === "python2") {
-      setQuizType("pythonTwoScore");
-    } else if (type === "python3") {
-      setQuizType("pythonThreeScore");
-    } else if (type === "python5") {
-      setQuizType("pythonFiveScore");
-    } else if (type === "python6") {
-      setQuizType("pythonSixScore");
-    } else if (type === "python7") {
-      setQuizType("pythonSevenScore");
-    } else if (type === "review") {
-      setQuizType("reviewScore");
-    } else if (type === "email") {
-      setQuizType("emailScore");
-    } else if (type === "beyond") {
-      setQuizType("beyondScore");
-    } else if (type === "mainframe1") {
-      setQuizType("mainframeOneScore");
-    } else if (type === "mainframe2") {
-      setQuizType("mainframeTwoScore");
-    } else if (type === "mainframe3") {
-      setQuizType("mainframeThreeScore");
-    } else if (type === "mainframe4") {
-      setQuizType("mainframeFourScore");
-    } else if (type === "mainframe5") {
-      setQuizType("mainframeFiveScore");
-    } else if (type === "mainframe6") {
-      setQuizType("mainframeSixScore");
-    } else if (type === "cobol2") {
-      setQuizType("cobolTwoScore");
-    } else if (type === "cobol3") {
-      setQuizType("cobolThreeScore");
-    } else if (type === "cobol4") {
-      setQuizType("cobolFourScore");
-    } else if (type === "cobol6") {
-      setQuizType("cobolSixScore");
-    }
-    if (score > 0 && quizType) {
-      updateQuizScore(score, quizType);
-    }
-  }, [type, score, quizType, updateQuizScore]);
+    const typeMap = {
+      "decomposition": "decompositionScore",
+      "pattern-recognition": "patternScore",
+      "abstraction": "abstractionScore",
+      "algorithms": "algorithmScore",
+      "intro": "introScore",
+      "review": "reviewScore",
+      "email": "emailScore",
+      "beyond": "beyondScore",
+      "python1": "pythonOneScore",
+      "python2": "pythonTwoScore",
+      "python3": "pythonThreeScore",
+      "python5": "pythonFiveScore",
+      "python6": "pythonSixScore",
+      "python7": "pythonSevenScore",
+      "mainframe1": "mainframeOneScore",
+      "mainframe2": "mainframeTwoScore",
+      "mainframe3": "mainframeThreeScore",
+      "mainframe4": "mainframeFourScore",
+      "mainframe5": "mainframeFiveScore",
+      "mainframe6": "mainframeSixScore",
+      "cobol2": "cobolTwoScore",
+      "cobol3": "cobolThreeScore",
+      "cobol4": "cobolFourScore",
+      "cobol6": "cobolSixScore",
+    };
 
-  // 🔹 Fetch questions
+    setQuizType(typeMap[type]);
+
+    if (score > 0 && typeMap[type]) {
+      updateQuizScore(score, typeMap[type]);
+    }
+  }, [type, score, updateQuizScore]);
+
+  /** 🔹 Load questions */
   useEffect(() => {
     const fetchQuestions = async () => {
       const response = await fetch(
@@ -154,10 +127,10 @@ const Quiz = ({
       );
       const data = await response.json();
 
-      const filteredData = data.filter((question) => question.type === type);
-
-      setNewQuestions(filteredData);
-      setSelectedOptions(Array(filteredData.length).fill(null));
+      const filtered = data.filter((q) => q.type === type);
+      setNewQuestions(filtered);
+      setSelectedOptions(Array(filtered.length).fill(null));
+      setSelectedOptionsMC(Array(filtered.length).fill([]));
     };
 
     setSubmitted(false);
@@ -165,151 +138,112 @@ const Quiz = ({
     fetchQuestions();
   }, [id, topicId, contentId, type]);
 
+  /** 🔹 Prepare MC response arrays */
   useEffect(() => {
-    const currentUserResponsesMC = correctAnswers.map((response) => {
-      if (Array.isArray(response)) {
-        return [];
-      } else {
-        return null;
-      }
-    });
+    const mcInit = correctAnswers.map((ans) =>
+      Array.isArray(ans) ? [] : null
+    );
+    setUserResponsesMC(mcInit);
+  }, [correctAnswers]);
 
-    setUserResponsesMC(currentUserResponsesMC);
-  }, [correctAnswers, type]);
-
+  /** 🔹 Push questions into Redux */
   useEffect(() => {
     fetchQuestionsSuccess(newQuestions);
-  }, [fetchQuestionsSuccess, newQuestions]);
+  }, [newQuestions, fetchQuestionsSuccess]);
 
-  useEffect(() => {
-    selectAnswer(questionIndex, userResponseMC);
-    const updatedSelectedOptions = [...selectedOptions];
+  /** 🔹 Handle single-choice selection */
+  const handleOptionClick = (qIndex, optionIndex) => {
+    const updated = [...selectedOptions];
+    updated[qIndex] = optionIndex;
 
-    updatedSelectedOptions[questionIndex] = userResponseMC;
-    setSelectedOptions(updatedSelectedOptions);
-  }, [selectAnswer, userResponseMC]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (!questions) {
-    return <>Loading...</>;
-  }
-
-  const handleOptionClick = (questionIndex, optionIndex) => {
-    const updatedSelectedOptions = [...selectedOptions];
-    updatedSelectedOptions[questionIndex] = optionIndex;
-    if (typeof questions[questionIndex].correctAnswers !== "object") {
-      setSelectedOptions(updatedSelectedOptions);
-      selectAnswer(questionIndex, optionIndex);
-    }
+    setSelectedOptions(updated);
+    selectAnswer(qIndex, optionIndex);
   };
 
-  const handleCheckboxChange = async (event, question, index, optionIndex) => {
-    const { checked } = event.target;
-    const updatedSelectedOptionsMC = [...selectedOptionsMC];
-    const updatedSelectedOptions = [...selectedOptions];
+  /** 🔹 Handle multi-choice selection */
+  const handleCheckboxChange = (event, qIndex, optionIndex) => {
+    const updated = [...userResponsesMC];
 
-    updatedSelectedOptionsMC[optionIndex] = checked;
-
-    const currentUserResponsesMC = [...userResponsesMC];
-
-    if (checked) {
-      currentUserResponsesMC[index].push(optionIndex);
+    if (event.target.checked) {
+      updated[qIndex].push(optionIndex);
     } else {
-      currentUserResponsesMC[index] = currentUserResponsesMC[index].filter(
-        (option) => option !== optionIndex
-      );
+      updated[qIndex] = updated[qIndex].filter((x) => x !== optionIndex);
     }
 
-    updatedSelectedOptions[index] = currentUserResponsesMC[index];
-    setUserResponsesMC(currentUserResponsesMC);
+    const updatedSelectedOptions = [...selectedOptions];
+    updatedSelectedOptions[qIndex] = updated[qIndex];
+
+    setUserResponsesMC(updated);
     setSelectedOptions(updatedSelectedOptions);
-    setQuestionIndex(index);
-    setSelectedOptionsMC(updatedSelectedOptionsMC);
-    selectAnswer(index, userResponseMC);
+    selectAnswer(qIndex, updated[qIndex]);
   };
 
-  const handleNotificationClose = (event, reason) => {
-    if (reason === "clickaway") return;
-    setNotificationOpen(false);
-  };
-
-  const handleBackgroundColor = (index, optionIndex) => {
-    if (submitted) {
-      if (typeof selectedOptions[index] !== "object") {
-        return selectedOptions[index] === optionIndex
-          ? correctAnswers[index] === userResponses[index]
-            ? "#00e348"
-            : "#ff4141"
-          : correctAnswers[index] === optionIndex
-          ? "#00e348"
-          : "#dddddd";
-      } else {
-        return correctAnswers[index] &&
-          correctAnswers[index].includes(optionIndex)
-          ? "#00e348"
-          : "#ff4141";
-      }
+  /** 🔹 Compute background colors */
+  const handleBackgroundColor = (qIndex, optIndex) => {
+    if (!submitted) {
+      return selectedOptions[qIndex] === optIndex ? "#419aff" : "#ffffff";
     }
-    return selectedOptions[index] === optionIndex ? "#419aff" : "#ffffff";
+
+    const isCorrect = Array.isArray(correctAnswers[qIndex])
+      ? correctAnswers[qIndex].includes(optIndex)
+      : correctAnswers[qIndex] === optIndex;
+
+    const isSelected = Array.isArray(selectedOptions[qIndex])
+      ? selectedOptions[qIndex].includes(optIndex)
+      : selectedOptions[qIndex] === optIndex;
+
+    if (isCorrect) return "#00e348"; // green correct
+    if (isSelected && !isCorrect) return "#ff4141"; // red wrong
+
+    return "#dddddd";
   };
 
-  // 🔥 UPDATED: now async and logs activity
+  /** 🔥 SUBMIT QUIZ (score + activity log) */
   const handleSubmit = async () => {
     let newScore = 0;
 
-    // Compare selectedOptions with correctAnswers
-    selectedOptions.forEach((response, index) => {
-      if (typeof response !== "object") {
-        if (response === correctAnswers[index]) {
+    selectedOptions.forEach((response, i) => {
+      if (!Array.isArray(response)) {
+        if (response === correctAnswers[i]) newScore++;
+      } else {
+        const sortedUser = [...response].sort();
+        const sortedCorrect = [...correctAnswers[i]].sort();
+        if (
+          sortedUser.length === sortedCorrect.length &&
+          sortedUser.every((v, idx) => v === sortedCorrect[idx])
+        ) {
           newScore++;
         }
-        setTimeout(async () => {
-          await axios.put(
-            `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
-            {
-              _id: questions[index]._id,
-              rightOrWrong: response === correctAnswers[index],
-            },
-            { withCredentials: true }
-          );
-        }, 3000);
-      } else {
-        const sortedArr1 = response.slice().sort();
-        const sortedArr2 = correctAnswers[index].slice().sort();
-        let correct = false;
-        if (response.length === correctAnswers[index].length) {
-          if (sortedArr1.every((value, i) => value === sortedArr2[i])) {
-            correct = true;
-            newScore++;
-          }
-        }
-        setTimeout(async () => {
-          await axios.put(
-            `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
-            {
-              _id: questions[index]._id,
-              rightOrWrong: correct,
-            },
-            { withCredentials: true }
-          );
-        }, 3000);
       }
+
+      // Update question statistics
+      setTimeout(async () => {
+        await axios.put(
+          `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
+          {
+            _id: questions[i]._id,
+            rightOrWrong:
+              JSON.stringify(response) === JSON.stringify(correctAnswers[i]),
+          },
+          { withCredentials: true }
+        );
+      }, 3000);
     });
 
     setScore(newScore);
     setSubmitted(true);
 
-    // 🔹 NEW: send detailed activity log
+    /** 🔥 Log activity */
     try {
-      const timeSpent = Math.round((Date.now() - startTime) / 1000); // seconds
-      const percentScore =
-        questions.length > 0 ? (newScore * 100) / questions.length : 0;
+      const percent = (newScore / questions.length) * 100;
+      const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/users/activity/quiz`,
         {
           user_id: localStorage.getItem("userID"),
           type,
-          score: percentScore,
+          score: percent,
           timeSpent,
         },
         { withCredentials: true }
@@ -317,153 +251,97 @@ const Quiz = ({
 
       console.log("Quiz activity logged ✔");
     } catch (err) {
-      console.error("Error logging quiz activity:", err);
+      console.error("Activity log failed:", err);
     }
   };
 
   return (
-    <Box
-      className="quiz-container"
-      sx={{
-        margin: "30px",
-        padding: "30px",
-        backgroundColor: "#f9f9f9",
-        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
-      }}
-    >
-      <Alert severity="warning">
-        Please refresh the page if the quiz does not come up.
-      </Alert>
+    <Box className="quiz-container" sx={{ margin: "30px", padding: "30px" }}>
+      <Alert severity="warning">Please refresh the page if the quiz does not load.</Alert>
 
       {questions.length > 0 ? (
         questions.map((question, index) => (
-          <Box
-            key={index}
-            className="question-card"
-            sx={{ marginBottom: "20px" }}
-          >
-            {question.type === type && (
-              <>
-                <Box sx={{ marginBottom: "10px" }}>
-                  <h6
-                    style={{ fontWeight: "600" }}
-                    dangerouslySetInnerHTML={{
-                      __html: question.question,
-                    }}
-                  />
-                </Box>
-                {question.imgURL && (
-                  <img
-                    className="img-url"
-                    src={question.imgURL}
-                    alt={question.question}
-                  />
-                )}
-                <List>
-                  <>
-                    {!Array.isArray(question.correctAnswer)
-                      ? question.options?.map((option, optionIndex) => (
-                          <ListItem key={optionIndex} disablePadding>
-                            <ListItemButton
-                              onClick={() =>
-                                handleOptionClick(index, optionIndex)
-                              }
-                              sx={{
-                                backgroundColor: handleBackgroundColor(
-                                  index,
-                                  optionIndex
-                                ),
-                                borderRadius: "8px",
-                                padding: "12px",
-                                marginBottom: "8px",
-                                border: "1px solid #000000",
-                                "&:hover": {
-                                  backgroundColor: "#bfdfff",
-                                },
-                              }}
-                            >
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: option,
-                                }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        ))
-                      : question.options?.map((option, optionIndex) => (
-                          <ListItem key={optionIndex} disablePadding>
-                            <FormControlLabel
-                              sx={{
-                                backgroundColor: handleBackgroundColor(
-                                  index,
-                                  optionIndex
-                                ),
-                                borderRadius: "8px",
-                                padding: "12px",
-                                marginBottom: "8px",
-                                border: "1px solid #000000",
-                                width: "100%",
-                              }}
-                              control={
-                                <Checkbox
-                                  onChange={(event) =>
-                                    handleCheckboxChange(
-                                      event,
-                                      question,
-                                      index,
-                                      optionIndex
-                                    )
-                                  }
-                                />
-                              }
-                              label={
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: option,
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                        ))}
-                  </>
-                </List>
-              </>
+          <Box key={index} sx={{ marginBottom: "20px" }}>
+            <h6
+              style={{ fontWeight: "600" }}
+              dangerouslySetInnerHTML={{ __html: question.question }}
+            />
+
+            {question.imgURL && (
+              <img className="img-url" src={question.imgURL} alt="question" />
             )}
+
+            <List>
+              {!Array.isArray(question.correctAnswer)
+                ? /** SINGLE CHOICE */
+                  question.options.map((opt, optIndex) => (
+                    <ListItem key={optIndex} disablePadding>
+                      <ListItemButton
+                        onClick={() => handleOptionClick(index, optIndex)}
+                        sx={{
+                          backgroundColor: handleBackgroundColor(index, optIndex),
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                          border: "1px solid #000",
+                        }}
+                      >
+                        <div dangerouslySetInnerHTML={{ __html: opt }} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                : /** MULTIPLE CHOICE */
+                  question.options.map((opt, optIndex) => (
+                    <ListItem key={optIndex} disablePadding>
+                      <FormControlLabel
+                        sx={{
+                          backgroundColor: handleBackgroundColor(index, optIndex),
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                          border: "1px solid #000",
+                          width: "100%",
+                        }}
+                        control={
+                          <Checkbox
+                            onChange={(e) =>
+                              handleCheckboxChange(e, index, optIndex)
+                            }
+                          />
+                        }
+                        label={
+                          <div dangerouslySetInnerHTML={{ __html: opt }} />
+                        }
+                      />
+                    </ListItem>
+                  ))}
+            </List>
           </Box>
         ))
       ) : (
-        <Grid
-          item
-          xs={12}
-          mt={5}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
+        <Grid container justifyContent="center" mt={5}>
           <CircularProgress color="error" />
         </Grid>
       )}
+
       <Button
         variant="contained"
-        color="primary"
         onClick={handleSubmit}
         disabled={submitted}
         sx={{ marginTop: "20px" }}
       >
         Submit Quiz
       </Button>
+
       {submitted && (
         <>
           <Typography variant="h6" sx={{ marginTop: "20px" }}>
-            Your Score: {score} out of {questions.length}
+            Your Score: {score} / {questions.length}
           </Typography>
+
           <Notification
             open={notificationOpen}
-            handleClose={handleNotificationClose}
-            message={`You submitted successfully, your score is: ${(
-              (score * 100) /
-              questions.length
-            ).toFixed(2)}%`}
-            severity={"success"}
+            handleClose={() => setNotificationOpen(false)}
+            message={`Score: ${((score / questions.length) * 100).toFixed(2)}%`}
+            severity="success"
           />
         </>
       )}
@@ -477,6 +355,7 @@ const mapStateToProps = (state) => ({
   correctAnswers: state.quiz.correctAnswers,
   quizScore: state.user.quizScore,
 });
+
 export default connect(mapStateToProps, {
   fetchQuestionsSuccess,
   selectAnswer,
