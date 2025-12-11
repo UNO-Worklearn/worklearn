@@ -5,6 +5,9 @@
  *  Objective: Building a quiz feature for students to complete quizzes on our own application
  *
  */
+/**
+ * Quiz Component – Updated with Activity Logging
+ */
 
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -29,7 +32,6 @@ import {
 
 import { updateQuizScore } from "../../redux/actions/userActions";
 import Notification from "../SnackBar/SnackBar";
-
 import "./Quiz.css";
 import axios from "axios";
 import { useParams } from "react-router";
@@ -56,9 +58,7 @@ const Quiz = ({
     false,
   ]);
 
-  const [userResponseMC, setUserResponseMC] = useState([]);
   const [userResponsesMC, setUserResponsesMC] = useState([]);
-
   const [score, setScore] = useState(0);
   const [quizType, setQuizType] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -66,12 +66,15 @@ const Quiz = ({
 
   const { id, topicId, contentId } = useParams();
 
+  // Track time spent on quiz
+  const [startTime] = useState(Date.now());
+
+  // Send quiz score to backend userScores table
   useEffect(() => {
     const updateQuizScoreState = async () => {
       if (score > 0) {
         await axios.put(
           `${process.env.REACT_APP_BACKEND_URL}/api/users/quiz`,
-          // `http://localhost:3001/api/users/quiz`,
           {
             quizScore,
             type,
@@ -81,82 +84,57 @@ const Quiz = ({
         );
       }
     };
-    if (submitted) {
-      updateQuizScoreState();
-    }
+    if (submitted) updateQuizScoreState();
   }, [submitted, quizScore, type]);
 
+
+  // Determine which quiz score field to update
   useEffect(() => {
-    if (type === "decomposition") {
-      setQuizType("decompositionScore");
-    } else if (type === "pattern-recognition") {
-      setQuizType("patternScore");
-    } else if (type === "abstraction") {
-      setQuizType("abstractionScore");
-    } else if (type === "algorithms") {
-      setQuizType("algorithmScore");
-    } else if (type === "intro") {
-      setQuizType("introScore");
-    } else if (type === "python1") {
-      setQuizType("pythonOneScore");
-    } else if (type === "python2") {
-      setQuizType("pythonTwoScore");
-    } else if (type === "python3") {
-      setQuizType("pythonThreeScore");
-    } else if (type === "python5") {
-      setQuizType("pythonFiveScore");
-    } else if (type === "python6") {
-      setQuizType("pythonSixScore");
-    } else if (type === "python7") {
-      setQuizType("pythonSevenScore");
-    } else if (type === "review") {
-      setQuizType("reviewScore");
-    } else if (type === "email") {
-      setQuizType("emailScore");
-    } else if (type === "beyond") {
-      setQuizType("beyondScore");
-    } else if (type === "mainframe1") {
-      setQuizType("mainframeOneScore");
-    } else if (type === "mainframe2") {
-      setQuizType("mainframeTwoScore"); 
-    } else if (type === "mainframe3") {
-      setQuizType("mainframeThreeScore");
-    } else if (type === "mainframe4") {
-      setQuizType("mainframeFourScore");
-    } else if (type === "mainframe5") {
-      setQuizType("mainframeFiveScore");
-    } else if (type === "mainframe6") {
-      setQuizType("mainframeSixScore");
-    } else if (type === "cobol2") {
-      setQuizType("cobolTwoScore");
-    } else if (type === "cobol3") {
-      setQuizType("cobolThreeScore");
-    } else if (type === "cobol4") {
-      setQuizType("cobolFourScore");
-    } else if (type === "cobol6") {
-      setQuizType("cobolSixScore");
-    }
-    if (score > 0) {
+    const typeMap = {
+      "decomposition": "decompositionScore",
+      "pattern-recognition": "patternScore",
+      "abstraction": "abstractionScore",
+      "algorithms": "algorithmScore",
+      "intro": "introScore",
+      "review": "reviewScore",
+      "email": "emailScore",
+      "beyond": "beyondScore",
+      "python1": "pythonOneScore",
+      "python2": "pythonTwoScore",
+      "python3": "pythonThreeScore",
+      "python5": "pythonFiveScore",
+      "python6": "pythonSixScore",
+      "python7": "pythonSevenScore",
+      "mainframe1": "mainframeOneScore",
+      "mainframe2": "mainframeTwoScore",
+      "mainframe3": "mainframeThreeScore",
+      "mainframe4": "mainframeFourScore",
+      "mainframe5": "mainframeFiveScore",
+      "mainframe6": "mainframeSixScore",
+      "cobol2": "cobolTwoScore",
+      "cobol3": "cobolThreeScore",
+      "cobol4": "cobolFourScore",
+      "cobol6": "cobolSixScore",
+    };
+
+    setQuizType(typeMap[type]);
+
+    if (score > 0 && quizType) {
       updateQuizScore(score, quizType);
     }
-  }, [type, score, quizType, updateQuizScore]);
+  }, [type, score, quizType]);
 
+
+  // Fetch questions from backend
   useEffect(() => {
-    // Simulate fetching questions asynchronously
-    // Replace this with your actual API call
     const fetchQuestions = async () => {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
-        // "http://localhost:3001/api/questions",
         { credentials: "include" }
       );
       const data = await response.json();
 
-      const filteredData = data.filter((question) => question.type === type);
-      const multipleChoiceQs = filteredData.filter(
-        (question) => typeof question.correctAnswer === "object"
-      );
-
+      const filteredData = data.filter(q => q.type === type);
       setNewQuestions(filteredData);
       setSelectedOptions(Array(filteredData.length).fill(null));
     };
@@ -166,303 +144,194 @@ const Quiz = ({
     fetchQuestions();
   }, [id, topicId, contentId, type]);
 
-  useEffect(() => {
-    const currentUserResponsesMC = correctAnswers.map((response) => {
-      if (Array.isArray(response)) {
-        return [];
-      } else {
-        return null;
-      }
-    });
 
-    setUserResponsesMC(currentUserResponsesMC);
+  // For multi-select questions
+  useEffect(() => {
+    const mc = correctAnswers.map(v => Array.isArray(v) ? [] : null);
+    setUserResponsesMC(mc);
   }, [correctAnswers, type]);
+
 
   useEffect(() => {
     fetchQuestionsSuccess(newQuestions);
-  }, [fetchQuestionsSuccess, newQuestions]);
+  }, [newQuestions]);
 
-  useEffect(() => {
-    selectAnswer(questionIndex, userResponseMC);
-    const updatedSelectedOptions = [...selectedOptions];
 
-    // Update the specific index with the new userResponseMC
-    updatedSelectedOptions[questionIndex] = userResponseMC;
+  // Submit Quiz
+  const handleSubmit = async () => {
+    let newScore = 0;
 
-    // Update the state with the modified selectedOptions array
-    setSelectedOptions(updatedSelectedOptions);
-  }, [selectAnswer, userResponseMC]);
+    selectedOptions.forEach((response, index) => {
+      let correct = false;
 
-  if (!questions) {
-    return <>Loading...</>;
-  }
+      if (Array.isArray(response)) {
+        const sortedUser = [...response].sort();
+        const sortedCorrect = [...correctAnswers[index]].sort();
+        correct = JSON.stringify(sortedUser) === JSON.stringify(sortedCorrect);
+      } else {
+        correct = response === correctAnswers[index];
+      }
 
-  // console.log(selectedOptions);
+      if (correct) newScore++;
 
-  const handleOptionClick = (questionIndex, optionIndex) => {
-    const updatedSelectedOptions = [...selectedOptions];
-    updatedSelectedOptions[questionIndex] = optionIndex;
-    if (typeof questions[questionIndex].correctAnswers !== "object") {
-      setSelectedOptions(updatedSelectedOptions);
-      selectAnswer(questionIndex, optionIndex); // Dispatch the selected answer to Redux
-    }
+      // Update question analytics
+      setTimeout(async () => {
+        await axios.put(
+          `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
+          {
+            _id: questions[index]._id,
+            rightOrWrong: correct,
+          },
+          { withCredentials: true }
+        );
+      }, 1000);
+    });
+
+    setScore(newScore);
+    setSubmitted(true);
+
+    // ---------------------------
+    //  NEW PART: SEND ACTIVITY LOG
+    // ---------------------------
+    const timeSpent = Math.round((Date.now() - startTime) / 1000); // seconds
+
+    await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/api/users/activity/quiz`,
+      {
+        user_id: localStorage.getItem("userID"),
+        type,
+        score: Math.round((newScore / questions.length) * 100),
+        timeSpent,
+      },
+      { withCredentials: true }
+    );
+
+    console.log("QUIZ ACTIVITY LOG SENT ✔");
   };
 
-  const handleCheckboxChange = async (event, question, index, optionIndex) => {
-    const { checked } = event.target;
-    const updatedSelectedOptionsMC = [...selectedOptionsMC];
-    const updatedSelectedOptions = [...selectedOptions];
-
-    const currentSelectedOptionsMC = []; // have []
-    console.log("updatedSelectedOptions[index]", index);
-    console.log(updatedSelectedOptions);
-    // if (currentSelectedOptionsMC.includes(optionIndex)) {
-    //   currentSelectedOptionsMC.filter((option) => option !== optionIndex);
-    // } else {
-    //   currentSelectedOptionsMC.push(optionIndex);
-    // }
-    // console.log("currentSelectedOptionsMC");
-    // console.log(currentSelectedOptionsMC);
-
-    updatedSelectedOptionsMC[optionIndex] = checked;
-
-    const currentUserResponsesMC = [...userResponsesMC];
-
-    if (checked) {
-      currentUserResponsesMC[index].push(optionIndex);
-    } else {
-      currentUserResponsesMC[index] = currentUserResponsesMC[index].filter(
-        (option) => option !== optionIndex
-      );
-    }
-
-    updatedSelectedOptions[index] = currentUserResponsesMC[index];
-    setUserResponsesMC(currentUserResponsesMC);
-    setSelectedOptions(updatedSelectedOptions);
-    setQuestionIndex(index);
-    setSelectedOptionsMC(updatedSelectedOptionsMC);
-    selectAnswer(index, userResponseMC);
-  };
-
-  const handleNotificationClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setNotificationOpen(false);
-  };
 
   const handleBackgroundColor = (index, optionIndex) => {
-    if (submitted) {
-      if (typeof selectedOptions[index] !== "object") {
-        return selectedOptions[index] === optionIndex
-          ? correctAnswers[index] === userResponses[index]
-            ? "#00e348"
-            : "#ff4141"
-          : correctAnswers[index] === optionIndex
-          ? "#00e348"
-          : "#dddddd";
-      } else {
-        return correctAnswers[index] &&
-          correctAnswers[index].includes(optionIndex)
-          ? "#00e348"
-          : "#ff4141";
-      }
+    if (!submitted) {
+      return selectedOptions[index] === optionIndex ? "#419aff" : "#ffffff";
     }
-    return selectedOptions[index] === optionIndex ? "#419aff" : "#ffffff";
+
+    const correct = correctAnswers[index];
+
+    if (Array.isArray(correct)) {
+      return correct.includes(optionIndex) ? "#00e348" : "#ff4141";
+    }
+
+    return optionIndex === correct ? "#00e348" : "#ff4141";
   };
 
-  const handleSubmit = () => {
-    let newScore = score; // Initialize a variable to keep track of the new score
-
-    // Compare userResponses with correctAnswers
-    selectedOptions.forEach((response, index) => {
-      if (typeof response !== "object") {
-        if (response === correctAnswers[index]) {
-          newScore++; // Increment the score when the response is correct
-        }
-        setTimeout(async () => {
-          await axios.put(
-            `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
-            // `http://localhost:3001/api/users/quiz`,
-            {
-              _id: questions[index]._id,
-              rightOrWrong: response === correctAnswers[index] ? true : false,
-            },
-            { withCredentials: true }
-          );
-        }, 3000);
-      } else {
-        const sortedArr1 = response.slice().sort();
-        const sortedArr2 = correctAnswers[index].slice().sort();
-        if (response.length === correctAnswers[index].length) {
-          if (sortedArr1.every((value, index) => value === sortedArr2[index])) {
-            newScore++;
-          }
-        }
-        setTimeout(async () => {
-          await axios.put(
-            `${process.env.REACT_APP_BACKEND_URL}/api/questions`,
-            // `http://localhost:3001/api/users/quiz`,
-            {
-              _id: questions[index]._id,
-              rightOrWrong:
-                response.length === correctAnswers[index].length &&
-                sortedArr1.every((value, index) => value === sortedArr2[index])
-                  ? true
-                  : false,
-            },
-            { withCredentials: true }
-          );
-        }, 3000);
-      }
-    });
-    setScore(newScore); // Update the score state with the new score
-    setSubmitted(true); // Set submitted to true to indicate the quiz has been submitted
-  };
 
   return (
-    <Box
-      className="quiz-container"
-      sx={{
-        margin: "30px",
-        padding: "30px",
-        backgroundColor: "#f9f9f9",
-        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)", // Box shadow
-      }}
-    >
-      <Alert severity="warning">
-        Please refresh the page if the quiz does not come up.
-      </Alert>
+    <Box className="quiz-container" sx={{ margin: "30px", padding: "30px" }}>
+      <Alert severity="warning">Please refresh if quiz does not load.</Alert>
 
       {questions.length > 0 ? (
         questions.map((question, index) => (
-          <Box
-            key={index}
-            className="question-card"
-            sx={{ marginBottom: "20px" }}
-          >
-            {question.type === type && (
-              <>
-                <Box sx={{ marginBottom: "10px" }}>
-                  <h6
-                    style={{ fontWeight: "600" }}
-                    dangerouslySetInnerHTML={{
-                      __html: question.question,
-                    }}
-                  />
-                </Box>
-                {question.imgURL && (
-                  <img
-                    class="img-url"
-                    src={question.imgURL}
-                    alt={question.question}
-                  />
-                )}
-                <List>
-                  <>
-                    {!Array.isArray(question.correctAnswer)
-                      ? question.options?.map((option, optionIndex) => (
-                          <ListItem key={optionIndex} disablePadding>
-                            <ListItemButton
-                              onClick={() =>
-                                handleOptionClick(index, optionIndex)
-                              }
-                              sx={{
-                                backgroundColor: handleBackgroundColor(
-                                  index,
-                                  optionIndex
-                                ),
-                                borderRadius: "8px",
-                                padding: "12px",
-                                marginBottom: "8px",
-                                border: "1px solid #000000",
-                                "&:hover": {
-                                  backgroundColor: "#bfdfff", // Light red background on hover
-                                },
-                              }}
-                            >
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: option,
-                                }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        ))
-                      : question.options?.map((option, optionIndex) => (
-                          <ListItem key={optionIndex} disablePadding>
-                            <FormControlLabel
-                              sx={{
-                                backgroundColor: handleBackgroundColor(
-                                  index,
-                                  optionIndex
-                                ),
-                                borderRadius: "8px",
-                                padding: "12px",
-                                marginBottom: "8px",
-                                border: "1px solid #000000",
-                                width: "100%",
-                              }}
-                              control={
-                                <Checkbox
-                                  onChange={(event) =>
-                                    handleCheckboxChange(
-                                      event,
-                                      question,
-                                      index,
-                                      optionIndex
-                                    )
-                                  }
-                                />
-                              }
-                              label={
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: option,
-                                  }}
-                                />
-                              }
-                            />
-                          </ListItem>
-                        ))}
-                  </>
-                </List>
-              </>
+          <Box key={index} sx={{ marginBottom: "20px" }}>
+            <Box sx={{ marginBottom: "10px" }}>
+              <h6
+                style={{ fontWeight: "600" }}
+                dangerouslySetInnerHTML={{ __html: question.question }}
+              />
+            </Box>
+
+            {question.imgURL && (
+              <img className="img-url" src={question.imgURL} alt={question.question} />
             )}
+
+            <List>
+              {!Array.isArray(correctAnswers[index])
+                ? question.options?.map((option, optionIndex) => (
+                    <ListItem key={optionIndex} disablePadding>
+                      <ListItemButton
+                        onClick={() =>
+                          setSelectedOptions((prev) => {
+                            const updated = [...prev];
+                            updated[index] = optionIndex;
+                            return updated;
+                          })
+                        }
+                        sx={{
+                          backgroundColor: handleBackgroundColor(
+                            index,
+                            optionIndex
+                          ),
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                          border: "1px solid black",
+                        }}
+                      >
+                        <div dangerouslySetInnerHTML={{ __html: option }} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                : question.options?.map((option, optionIndex) => (
+                    <ListItem key={optionIndex} disablePadding>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setSelectedOptions((prev) => {
+                                const arr = [...prev];
+                                const existing = arr[index] || [];
+                                arr[index] = checked
+                                  ? [...existing, optionIndex]
+                                  : existing.filter((v) => v !== optionIndex);
+                                return arr;
+                              });
+                            }}
+                          />
+                        }
+                        label={
+                          <div dangerouslySetInnerHTML={{ __html: option }} />
+                        }
+                        sx={{
+                          backgroundColor: handleBackgroundColor(
+                            index,
+                            optionIndex
+                          ),
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                          border: "1px solid black",
+                          width: "100%",
+                        }}
+                      />
+                    </ListItem>
+                  ))}
+            </List>
           </Box>
         ))
       ) : (
-        <Grid
-          item
-          xs={12}
-          mt={5}
-          sx={{ display: "flex", justifyContent: "center" }}
-        >
-          <CircularProgress color="error" />
-        </Grid>
+        <CircularProgress color="error" />
       )}
+
       <Button
         variant="contained"
         color="primary"
         onClick={handleSubmit}
-        disabled={submitted} // Disable button after submission
+        disabled={submitted}
         sx={{ marginTop: "20px" }}
       >
         Submit Quiz
       </Button>
+
       {submitted && (
         <>
           <Typography variant="h6" sx={{ marginTop: "20px" }}>
-            Your Score: {score} out of {questions.length}
+            Your Score: {score} / {questions.length}
           </Typography>
           <Notification
             open={notificationOpen}
-            handleClose={handleNotificationClose}
-            message={`You submitted successfully, your score is: ${(
-              (score * 100) /
-              questions.length
-            ).toFixed(2)}%`}
-            severity={"success"}
+            handleClose={() => setNotificationOpen(false)}
+            message={`You scored ${((score / questions.length) * 100).toFixed(
+              2
+            )}%`}
+            severity="success"
           />
         </>
       )}
@@ -476,6 +345,7 @@ const mapStateToProps = (state) => ({
   correctAnswers: state.quiz.correctAnswers,
   quizScore: state.user.quizScore,
 });
+
 export default connect(mapStateToProps, {
   fetchQuestionsSuccess,
   selectAnswer,
