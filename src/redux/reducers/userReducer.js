@@ -22,22 +22,35 @@ const initialState = {
 
   // Max scores for progress page
   totalScore: {
-    decompositionScore: 9,
-    patternScore: 6,
-    abstractionScore: 6,
-    algorithmScore: 6,
-    introScore: 15,
-    pythonOneScore: 6,
-    pythonTwoScore: 5,
-    pythonThreeScore: 7,
-    pythonFiveScore: 4,
-    pythonSixScore: 5,
-    pythonSevenScore: 6,
-    reviewScore: 15,
-    emailScore: 0,
-    beyondScore: 0,
-    mainframeOneScore: 14,
-  },
+  decompositionScore: 9,
+  patternScore: 6,
+  abstractionScore: 6,
+  algorithmScore: 6,
+  introScore: 15,
+  reviewScore: 15,
+  emailScore: 0,
+  beyondScore: 0,
+
+  pythonOneScore: 6,
+  pythonTwoScore: 5,
+  pythonThreeScore: 7,
+  pythonFiveScore: 4,
+  pythonSixScore: 5,
+  pythonSevenScore: 6,
+
+  mainframeOneScore: 14,
+  mainframeTwoScore: 12,
+  mainframeThreeScore: 10,
+  mainframeFourScore: 8,
+  mainframeFiveScore: 6,
+
+  mainframeSixScore: 9,   // <-- REQUIRED, fix undefined
+
+  cobolTwoScore: 10,
+  cobolThreeScore: 10,
+  cobolFourScore: 10,
+  cobolSixScore: 10,
+},
 };
 
 export const userReducer = (state = initialState, action) => {
