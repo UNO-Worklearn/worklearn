@@ -25,6 +25,8 @@ import { LoadingButton } from "@mui/lab";
 import { setUser } from "../../redux/actions/userActions";
 
 //const javascriptDefault = `// some comment`;
+const javascriptDefault = ``; // empty editor
+
 
 function Playground() {
   const [code, setCode] = useState(javascriptDefault);
