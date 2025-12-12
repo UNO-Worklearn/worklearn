@@ -24,7 +24,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { setUser } from "../../redux/actions/userActions";
 
-const javascriptDefault = `// some comment`;
+//const javascriptDefault = `// some comment`;
 
 function Playground() {
   const [code, setCode] = useState(javascriptDefault);
