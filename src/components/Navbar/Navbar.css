@@ -1,47 +1,91 @@
-.navbar-section {
-    display: flex;
-    background: black;
-    color: #fff;
-}
-.navbar-nav {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 50px;
+.navbar {
+  background: #000;
+  color: #fff;
 }
 
-.navbar-items {
-    display: flex;
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
 }
 
-.navbar-logo .uno-logo {
-    width: 50px;
-    height: 50px;
-    margin: 5px 0 0 0;
+.uno-logo {
+  width: 40px;
+  height: 40px;
 }
 
-.navbar-items .navbar-item {
+/* Hamburger */
+.hamburger {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+}
+
+/* Menu */
+.navbar-menu {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  background: #000;
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.navbar-menu.open {
+  display: flex;
+}
+
+.navbar-menu a,
+.navbar-menu button {
+  padding: 14px 20px;
+  text-align: left;
+  color: #fff;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-top: 1px solid #333;
+}
+
+/* Dropdown */
+.dropdown {
+  background: #111;
+}
+
+.dropdown a,
+.dropdown button {
+  padding-left: 40px;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .hamburger {
+    display: none;
+  }
+
+  .navbar-menu {
+    position: static;
+    display: flex !important;
+    flex-direction: row;
+    width: auto;
+    background: none;
+  }
+
+  .navbar-menu a,
+  .navbar-menu button {
+    border: none;
     padding: 20px;
-    border-right: 1px solid #555;
-}
+  }
 
-.navbar-items .navbar-item a {
-    text-decoration: none;
+  .dropdown {
+    position: absolute;
+    background: #111;
+    margin-top: 10px;
+  }
 }
-
-svg {
-    fill: #ddd;
-}
-
-.navbar-item-logout {
-    margin-top: 15px;
-}
-
-.navbar-logout {
-    cursor: pointer
-}
-
-button svg {
-    fill: #c9c9c9;
-}
-

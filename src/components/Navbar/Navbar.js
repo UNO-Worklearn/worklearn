@@ -6,103 +6,96 @@ import { logOut } from "../../redux/actions/userActions";
 import { trackLogout } from "../../utils/trackLogout";
 
 function Navbar({ user, role, logOut }) {
-  const [isActive, setActive] = useState(false);
-
-  const toggleDropdown = () => setActive(!isActive);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     const userId = localStorage.getItem("userID");
     if (userId) trackLogout(userId);
     logOut();
+    setMenuOpen(false);
   };
 
   return (
-    <div className="navbar-section">
-      <div className="navbar-nav">
-
+    <nav className="navbar">
+      <div className="navbar-inner">
         {/* LOGO */}
-        <div className="navbar-item navbar-logo">
+        <div className="navbar-logo">
           <img
-            className="uno-logo"
             src="/images/uno-logo.png"
-            width="100"
-            height="100"
             alt="UNO logo"
+            className="uno-logo"
           />
         </div>
 
-        {/* NAVIGATION ITEMS */}
-        <div className="navbar-items">
+        {/* HAMBURGER */}
+        <button
+          className="hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          ☰
+        </button>
 
-          {/* HOME — hide when logged in */}
+        {/* NAV ITEMS */}
+        <div className={`navbar-menu ${menuOpen ? "open" : ""}`}>
           {!user && (
-            <div className="navbar-item" style={{ borderLeft: "1px solid #555" }}>
-              <Link to="/">Home</Link>
-            </div>
+            <Link to="/" onClick={() => setMenuOpen(false)}>
+              Home
+            </Link>
           )}
 
-          {/* DASHBOARD — only show when logged in */}
           {user && (
-            <div className="navbar-item" style={{ borderLeft: "1px solid #555" }}>
-              <Link to="/dashboard">Dashboard</Link>
-            </div>
+            <Link to="/dashboard" onClick={() => setMenuOpen(false)}>
+              Dashboard
+            </Link>
           )}
 
-          {/* PLAYGROUND — always visible */}
-          <div className="navbar-item">
-            <Link to="/playground">Playground</Link>
-          </div>
+          <Link to="/playground" onClick={() => setMenuOpen(false)}>
+            Playground
+          </Link>
 
-          {/* MY PROGRESS — only show when logged in */}
           {user && (
-            <div className="navbar-item">
-              <Link to={`/student-details/${localStorage.getItem("userID")}`}>
-                My Progress
-              </Link>
-            </div>
+            <Link
+              to={`/student-details/${localStorage.getItem("userID")}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              My Progress
+            </Link>
           )}
 
           {/* USER MENU */}
-          <div className="navbar-item">
-            {user ? (
-              <>
-                <button className="dropdown-toggle" onClick={toggleDropdown}>
-                  {typeof user === "string" ? user : user?.name}
-                  <svg xmlns="http://www.w3.org/2000/svg" height="0.8em" viewBox="0 0 320 512">
-                    <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2
-                            11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6
-                            7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                  </svg>
-                </button>
+          {user ? (
+            <>
+              <button
+                className="user-toggle"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                {typeof user === "string" ? user : user?.name} ▼
+              </button>
 
-                {/* DROPDOWN ITEMS */}
-                <div
-                  className="dropdown-container"
-                  style={{ display: isActive ? "block" : "none" }}
-                >
-                  {/* Teacher-only */}
+              {dropdownOpen && (
+                <div className="dropdown">
                   {localStorage.getItem("role") === '"teacher"' && (
-                    <div className="navbar-item-manage-student">
-                      <Link to="/manage-students">Manage Students</Link>
-                    </div>
+                    <Link
+                      to="/manage-students"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Manage Students
+                    </Link>
                   )}
 
-                  {/* Logout */}
-                  <div className="navbar-item-logout">
-                    <button className="navbar-logout" onClick={handleLogout}>
-                      Logout
-                    </button>
-                  </div>
+                  <button onClick={handleLogout}>Logout</button>
                 </div>
-              </>
-            ) : (
-              <Link to="/login">Login</Link>
-            )}
-          </div>
-
+              )}
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMenuOpen(false)}>
+              Login
+            </Link>
+          )}
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 

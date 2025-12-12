@@ -1,112 +1,126 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
-
 .dashboard {
-    display: grid;
-    grid-template-columns: 23vw 1fr;
-    width: 100vw;
-    font-family: 'Roboto', sans-serif;
-    letter-spacing: 0;
-    font-weight: 400;
-    margin-bottom: 100px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
 }
 
+/* ---------- Mobile Header ---------- */
+.dashboard-header {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #000;
+  color: #fff;
+}
+
+.sidebar-toggle {
+  font-size: 22px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ---------- Sidebar ---------- */
 .db-sidebar {
-    padding: 20px 10px;
-    display: flex;
-    width: 23vw;
-    height: 100vh;
-    flex-direction: column;
-    align-items: flex-start;
-    border-right: 1px solid #555;
-    font-size: 0.95em;
-    font-weight: 700;
-    overflow: scroll;
-    scroll-behavior: smooth;
+  background: #fff;
+  padding: 20px 10px;
+  border-right: 1px solid #555;
+  overflow-y: auto;
 }
 
-.db-sidebar .db-link {
-    transition: 200ms ease-in-out;
-}
-.db-sidebar .db-link a {
-    transition: 200ms ease-in-out;
-}
-
-.db-sidebar .db-link:hover{
-    background-color: #D71920;
-    color: #ffffff;
+/* ---------- Content ---------- */
+.db-content {
+  width: 100%;
+  padding: 16px;
 }
 
-.db-sidebar .db-link:visited{
-    background-color: #D71920;
-    color: #ffffff;
-}
-
-.db-sidebar .db-link a:hover{
-    background-color: #D71920;
-    color: #ffffff;
-}
-
+/* ---------- Sidebar Links ---------- */
 .db-unit p {
-    color: #D71920;
-    text-align: start;
+  color: #D71920;
 }
 
 .db-items {
-    font-size: 0.85em;
-    display: flex;
-    flex-direction: column;
-    text-align: start;
-    margin-left: 10px;
-}
-
-.db-item svg {
-    margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  font-size: 0.9em;
 }
 
 .db-item {
-    padding: 10px;
-    
-}
-
-.db-content {
-    width: 100%;
-}
-
-.dropdown-container {
-    display: none;
-    list-style-type: decimal;
-}
-
-.db-skeleton {
-    padding: 10%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.db-sidebar::-webkit-scrollbar-thumb {
-    background: black;
-}
-
-.dashboard-img {
-    width: 70%;
-    height: auto;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 8px;
-}
-
-.db-nested-content {
-    list-style-type: disc;
-    text-decoration: underline;
-}
-
-.mod-1 {
-    margin-left: -20px;
+  padding: 10px;
 }
 
 .db-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.db-link:hover {
+  background-color: #D71920;
+  color: #fff;
+}
+
+/* ---------- Nested ---------- */
+.dropdown-container {
+  list-style-type: none;
+  margin-left: 20px;
+}
+
+.db-nested-content {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+/* ---------- Mobile Styles ---------- */
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header {
     display: flex;
-    gap: 10px;
+  }
+
+  .db-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 80%;
+    max-width: 300px;
+    background: #fff;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+  }
+
+  .db-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .db-content {
+    padding-top: 16px;
+  }
+}
+/* Mobile accordion spacing */
+@media (max-width: 768px) {
+  .db-item {
+    padding: 14px 12px;
+  }
+
+  .db-link {
+    justify-content: space-between;
+  }
+
+  .dropdown-container {
+    margin-left: 12px;
+  }
+
+  .db-nested-content {
+    margin-left: 16px;
+  }
 }

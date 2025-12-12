@@ -11,15 +11,14 @@ function ResetPassword() {
 
   const handleResetPassword = async () => {
     try {
-        const response = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/api/users/reset-password`,
-            { token, password }
-          );
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/reset-password`,
+        { token, password }
+      );
       setMessage(response.data.message);
       setError("");
-    } catch (error) {
-      console.error(error);
-      setError(error.response?.data?.message || "Something went wrong.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong.");
       setMessage("");
     }
   };
@@ -27,44 +26,65 @@ function ResetPassword() {
   return (
     <Box
       sx={{
+        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        width: "50%",
-        padding: "20px 50px",
-        margin: "auto",
-        marginTop: "50px",
-        background: "#eee",
-        boxShadow: "rgba(0, 0, 0, 0.5) 0px 1px 4px",
-        borderRadius: "8px",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 2,
       }}
     >
-      <Typography variant="h4">Reset Password</Typography>
-      {message && <Alert severity="success">{message}</Alert>}
-      {error && <Alert severity="error">{error}</Alert>}
-
-      <TextField
-        label="New Password"
-        type="password"
-        variant="outlined"
-        sx={{ width: "60%", margin: "20px auto", background: "#fff" }}
-        margin="normal"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-
-      <Button
-        sx={{ width: "60%", margin: "auto", marginBottom: "30px" }}
-        variant="contained"
-        color="primary"
-        onClick={handleResetPassword}
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 420,
+          backgroundColor: "#eee",
+          boxShadow: "rgba(0, 0, 0, 0.2) 0px 2px 8px",
+          borderRadius: 2,
+          p: { xs: 3, sm: 4 },
+        }}
       >
-        Reset Password
-      </Button>
+        <Typography variant="h5" mb={2} textAlign="center">
+          Reset Password
+        </Typography>
 
-      <Link to="/login" style={{ padding: "0 20px", textDecoration: "underline" }}>
-        Back to Login
-      </Link>
+        {message && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {message}
+          </Alert>
+        )}
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <TextField
+          label="New Password"
+          type="password"
+          fullWidth
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          size="large"
+          sx={{ py: 1.5, mt: 2 }}
+          onClick={handleResetPassword}
+        >
+          Reset Password
+        </Button>
+
+        <Typography variant="body2" textAlign="center" mt={3}>
+          <Link to="/login">Back to Login</Link>
+        </Typography>
+      </Box>
     </Box>
   );
 }

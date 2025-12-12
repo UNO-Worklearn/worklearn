@@ -15,7 +15,7 @@ function Register({ role, setUserRole }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const handleRegister = async () => {
     try {
@@ -26,129 +26,131 @@ function Register({ role, setUserRole }) {
         email,
         password,
         confirmPassword,
-        role: role ? role : "'student'",
+        role: role ?? "student",
       });
-      setError([]);
-      history("/dashboard");
-    } catch (error) {
-      console.error(error);
-      setError(error.response.data.message);
+
+      setError("");
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
-  const handleRoleSelect = (role) => {
-    // Handle the selected role (send to the server, store in state, etc.)
-    setUserRole(role);
+
+  const handleRoleSelect = (selectedRole) => {
+    setUserRole(selectedRole);
   };
 
   return (
     <Box
       sx={{
+        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        width: "50%",
-        padding: "20px 50px",
-        margin: "50px auto",
-        background: "#eee",
-        boxShadow: "rgba(0, 0, 0, 0.5) 0px 1px 4px",
-        borderRadius: "8px",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 2,
       }}
     >
-      <Typography variant="h4">Create Your Account</Typography>
-      {error && <Alert severity="error">{error}</Alert>}
-      <TextField
-        label="First Name"
-        variant="outlined"
-        sx={{ width: "60%", margin: "20px auto", background: "#fff" }}
-        margin="normal"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-      />
-      <TextField
-        label="Last Name"
-        variant="outlined"
+      <Box
         sx={{
-          width: "60%",
-          margin: "20px auto",
-          background: "#fff",
-          marginTop: "0",
+          width: "100%",
+          maxWidth: 480,
+          backgroundColor: "#eee",
+          boxShadow: "rgba(0, 0, 0, 0.2) 0px 2px 8px",
+          borderRadius: 2,
+          p: { xs: 3, sm: 4 },
         }}
-        margin="normal"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-      />
-
-      <TextField
-        label="Username"
-        variant="outlined"
-        sx={{
-          width: "60%",
-          margin: "20px auto",
-          background: "#fff",
-          marginTop: "0",
-        }}
-        margin="normal"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <TextField
-        label="Email"
-        variant="outlined"
-        sx={{
-          width: "60%",
-          margin: "20px auto",
-          background: "#fff",
-          marginTop: "0",
-        }}
-        margin="normal"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <TextField
-        label="Password"
-        type="password"
-        variant="outlined"
-        sx={{
-          width: "60%",
-          margin: "20px auto",
-          background: "#fff",
-          marginTop: "0",
-        }}
-        margin="normal"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <TextField
-        label="Confirm Password"
-        type="password"
-        variant="outlined"
-        sx={{
-          width: "60%",
-          margin: "20px auto",
-          background: "#fff",
-          marginTop: "0",
-        }}
-        margin="normal"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        required
-      />
-      <div className="login-as">
-        Register as
-        {role !== null && <RoleSelectionForm onRoleSelect={handleRoleSelect} />}
-      </div>
-      <Button
-        sx={{ width: "60%", margin: "auto" }}
-        variant="contained"
-        color="error"
-        onClick={handleRegister}
       >
-        Register
-      </Button>
+        <Typography variant="h5" mb={2} textAlign="center">
+          Create Your Account
+        </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <TextField
+          label="First Name"
+          fullWidth
+          margin="normal"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        <TextField
+          label="Last Name"
+          fullWidth
+          margin="normal"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        <TextField
+          label="Username"
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        <TextField
+          label="Email"
+          fullWidth
+          margin="normal"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        <TextField
+          label="Confirm Password"
+          type="password"
+          fullWidth
+          margin="normal"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          sx={{ backgroundColor: "#fff" }}
+        />
+
+        {/* Role selection */}
+        <Box sx={{ mt: 3, mb: 2 }}>
+          <Typography variant="subtitle2" mb={1}>
+            Register as
+          </Typography>
+          <RoleSelectionForm onRoleSelect={handleRoleSelect} />
+        </Box>
+
+        <Button
+          fullWidth
+          variant="contained"
+          color="error"
+          size="large"
+          sx={{ py: 1.5 }}
+          onClick={handleRegister}
+        >
+          Register
+        </Button>
+      </Box>
     </Box>
   );
 }
