@@ -13,26 +13,14 @@ const storedUser = JSON.parse(localStorage.getItem("user"));
 
 const initialState = {
   users: [],
-  user: storedUser || "",
+  user: storedUser || null,
   progress: 0,
   role: "student",
-  quizScore: {
-    decompositionScore: 0,
-    patternScore: 0,
-    abstractionScore: 0,
-    algorithmScore: 0,
-    introScore: 0,
-    pythonOneScore: 0,
-    pythonTwoScore: 0,
-    pythonThreeScore: 0,
-    pythonFiveScore: 0,
-    pythonSixScore: 0,
-    pythonSevenScore: 0,
-    reviewScore: 0,
-    emailScore: 0,
-    beyondScore: 0,
-    mainframeOneScore: 0,
-  },
+
+  // Stores the *last* quiz score sent from Quiz.js before backend PUT
+  quizScore: null,
+
+  // Max scores for progress page
   totalScore: {
     decompositionScore: 9,
     patternScore: 6,
@@ -63,15 +51,16 @@ export const userReducer = (state = initialState, action) => {
     case FETCH_USER:
       return {
         ...state,
-        user: localStorage.getItem("user"),
+        user: JSON.parse(localStorage.getItem("user")),
       };
+
     case SET_USER:
       localStorage.setItem("user", JSON.stringify(action.payload));
-
       return {
         ...state,
         user: action.payload,
       };
+
     case SET_USER_ROLE:
       localStorage.setItem("role", JSON.stringify(action.payload));
       return {
@@ -79,12 +68,17 @@ export const userReducer = (state = initialState, action) => {
         role: action.payload,
       };
 
+    /* ------------------------------------------------------
+       UPDATE_QUIZ_SCORE
+       Stores the score in Redux so Quiz.js can send to backend
+       payload = { quizScore, type }
+    ------------------------------------------------------ */
     case UPDATE_QUIZ_SCORE:
       return {
         ...state,
         quizScore: {
-          ...state.quizScore,
-          [action.payload.type]: action.payload.quizScore,
+          score: action.payload.quizScore,
+          type: action.payload.type,
         },
       };
 
@@ -101,13 +95,15 @@ export const userReducer = (state = initialState, action) => {
       };
 
     case LOG_OUT:
-      // Clear user data from local storage
       localStorage.removeItem("user");
       localStorage.removeItem("role");
       return {
         ...state,
         user: null,
+        role: "student",
+        quizScore: null,
       };
+
     default:
       return state;
   }

@@ -1,10 +1,15 @@
 /**
- * - Updates user quiz score (optional)
- * - Removes old broken PUT /api/users/quiz route
+ * Fully fixed Quiz.js
+ * - Updates global quizHistory in backend
+ * - Updates daily logs
+ * - Updates progress scores (raw score)
+ * - Fixes multi-select behavior
+ * - Fixes Redux sync
  */
 
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+
 import {
   Alert,
   Box,
@@ -27,9 +32,10 @@ import {
 import { updateQuizScore } from "../../redux/actions/userActions";
 import Notification from "../SnackBar/SnackBar";
 
-import "./Quiz.css";
 import axios from "axios";
 import { useParams } from "react-router";
+
+import "./Quiz.css";
 
 const Quiz = ({
   type,
@@ -51,7 +57,7 @@ const Quiz = ({
   /** Track start time */
   const [startTime] = useState(Date.now());
 
-  /** Map quiz type to scoring field */
+  /** Map quiz type to DB score field */
   const typeToField = {
     decomposition: "decompositionScore",
     "pattern-recognition": "patternScore",
@@ -93,53 +99,59 @@ const Quiz = ({
       setNewQuestions(filtered);
       setSelectedOptions(Array(filtered.length).fill(null));
       setUserResponsesMC(
-        filtered.map((q) =>
-          Array.isArray(q.correctAnswer) ? [] : null
-        )
+        filtered.map((q) => (Array.isArray(q.correctAnswer) ? [] : null))
       );
     };
 
     setSubmitted(false);
     setScore(0);
+
     loadQuestions();
   }, [id, topicId, contentId, type]);
 
-  /** Push to Redux */
+  /** Push questions to Redux */
   useEffect(() => {
     fetchQuestionsSuccess(newQuestions);
   }, [newQuestions, fetchQuestionsSuccess]);
 
   /** Handle single-choice selection */
   const handleOptionClick = (qIndex, optIndex) => {
+    if (submitted) return;
+
     const updated = [...selectedOptions];
     updated[qIndex] = optIndex;
     setSelectedOptions(updated);
+
     selectAnswer(qIndex, optIndex);
   };
 
   /** Handle multi-choice checkbox */
   const handleCheckboxChange = (e, qIndex, optIndex) => {
+    if (submitted) return;
+
     const updated = [...userResponsesMC];
 
-    if (e.target.checked) updated[qIndex].push(optIndex);
-    else updated[qIndex] = updated[qIndex].filter((x) => x !== optIndex);
-
-    const updatedSelected = [...selectedOptions];
-    updatedSelected[qIndex] = updated[qIndex];
+    if (e.target.checked) {
+      updated[qIndex].push(optIndex);
+    } else {
+      updated[qIndex] = updated[qIndex].filter((x) => x !== optIndex);
+    }
 
     setUserResponsesMC(updated);
-    setSelectedOptions(updatedSelected);
+    setSelectedOptions(updated);
 
     selectAnswer(qIndex, updated[qIndex]);
   };
 
-  /** Background highlight logic */
+  /** Background color logic */
   const handleBackground = (qIndex, optIndex) => {
     if (!submitted) {
-      return selectedOptions[qIndex]?.includes?.(optIndex) ||
-        selectedOptions[qIndex] === optIndex
-        ? "#419aff"
-        : "#fff";
+      const isSelected =
+        Array.isArray(selectedOptions[qIndex])
+          ? selectedOptions[qIndex].includes(optIndex)
+          : selectedOptions[qIndex] === optIndex;
+
+      return isSelected ? "#419aff" : "#fff";
     }
 
     const correct = correctAnswers[qIndex];
@@ -147,16 +159,18 @@ const Quiz = ({
       ? correct.includes(optIndex)
       : correct === optIndex;
 
-    const isSelected = Array.isArray(selectedOptions[qIndex])
-      ? selectedOptions[qIndex].includes(optIndex)
-      : selectedOptions[qIndex] === optIndex;
+    const isSelected =
+      Array.isArray(selectedOptions[qIndex])
+        ? selectedOptions[qIndex].includes(optIndex)
+        : selectedOptions[qIndex] === optIndex;
 
     if (isCorrect) return "#00e348";
     if (isSelected && !isCorrect) return "#ff4141";
+
     return "#ddd";
   };
 
-  /** SUBMIT QUIZ */
+  /** SUBMIT QUIZ – FULLY FIXED */
   const handleSubmit = async () => {
     let rawScore = 0;
 
@@ -184,36 +198,49 @@ const Quiz = ({
     const percent = (rawScore / questions.length) * 100;
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
-    /** OPTIONAL: update student's cumulative score */
+    /** Update Redux score (local only) */
     const scoreField = typeToField[type];
     if (scoreField) {
-      updateQuizScore(percent, scoreField); // Redux → will update backend separately
+      updateQuizScore(rawScore, scoreField);
     }
 
-    /** Log quiz attempt */
+    /** Log activity to backend */
     try {
       await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/users/activity/quiz`,
         {
           user_id: localStorage.getItem("userID"),
           type,
-          score: percent,
+          score: percent, // daily log uses percent
           timeSpent,
         },
         { withCredentials: true }
       );
-
-      console.log("Quiz activity logged ✔");
     } catch (err) {
       console.error("Quiz activity FAILED:", err);
+    }
+
+    /** UPDATE PROGRESS PAGE SCORE IN BACKEND */
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/quiz`,
+        {
+          user_id: localStorage.getItem("userID"),
+          type,
+          quizScore: rawScore, // progress page requires RAW SCORE
+        },
+        { withCredentials: true }
+      );
+
+      console.log("Progress score updated ✔");
+    } catch (err) {
+      console.error("Score update FAILED:", err);
     }
   };
 
   return (
     <Box className="quiz-container" sx={{ margin: "30px", padding: "30px" }}>
-      <Alert severity="warning">
-        Please refresh the page if the quiz does not load.
-      </Alert>
+      <Alert severity="warning">Please refresh the page if the quiz does not load.</Alert>
 
       {questions.length > 0 ? (
         questions.map((question, qIndex) => (
@@ -229,26 +256,23 @@ const Quiz = ({
 
             <List>
               {!Array.isArray(question.correctAnswer)
-                ? /** --- SINGLE-CHOICE --- */
-                  question.options.map((opt, optIndex) => (
+                ? question.options.map((opt, optIndex) => (
                     <ListItem key={optIndex} disablePadding>
                       <ListItemButton
-                        onClick={() =>
-                          !submitted && handleOptionClick(qIndex, optIndex)
-                        }
+                        onClick={() => handleOptionClick(qIndex, optIndex)}
                         sx={{
                           backgroundColor: handleBackground(qIndex, optIndex),
                           borderRadius: "8px",
                           marginBottom: "8px",
                           border: "1px solid #000",
                         }}
+                        disabled={submitted}
                       >
                         <div dangerouslySetInnerHTML={{ __html: opt }} />
                       </ListItemButton>
                     </ListItem>
                   ))
-                : /** --- MULTIPLE-CHOICE --- */
-                  question.options.map((opt, optIndex) => (
+                : question.options.map((opt, optIndex) => (
                     <ListItem key={optIndex} disablePadding>
                       <FormControlLabel
                         sx={{
@@ -266,9 +290,7 @@ const Quiz = ({
                             }
                           />
                         }
-                        label={
-                          <div dangerouslySetInnerHTML={{ __html: opt }} />
-                        }
+                        label={<div dangerouslySetInnerHTML={{ __html: opt }} />}
                       />
                     </ListItem>
                   ))}
