@@ -1,6 +1,6 @@
 import "./Navbar.css";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import { logOut } from "../../redux/actions/userActions";
 import { trackLogout } from "../../utils/trackLogout";
@@ -9,11 +9,16 @@ function Navbar({ user, role, logOut }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const closeMenus = () => {
+    setMenuOpen(false);
+    setDropdownOpen(false);
+  };
+
   const handleLogout = () => {
     const userId = localStorage.getItem("userID");
     if (userId) trackLogout(userId);
     logOut();
-    setMenuOpen(false);
+    closeMenus();
   };
 
   return (
@@ -28,10 +33,11 @@ function Navbar({ user, role, logOut }) {
           />
         </div>
 
-        {/* HAMBURGER */}
+        {/* HAMBURGER (mobile) */}
         <button
           className="hamburger"
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
         >
           ☰
         </button>
@@ -39,59 +45,85 @@ function Navbar({ user, role, logOut }) {
         {/* NAV ITEMS */}
         <div className={`navbar-menu ${menuOpen ? "open" : ""}`}>
           {!user && (
-            <Link to="/" onClick={() => setMenuOpen(false)}>
+            <NavLink
+              to="/"
+              onClick={closeMenus}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
               Home
-            </Link>
+            </NavLink>
           )}
 
           {user && (
-            <Link to="/dashboard" onClick={() => setMenuOpen(false)}>
+            <NavLink
+              to="/dashboard"
+              onClick={closeMenus}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
               Dashboard
-            </Link>
+            </NavLink>
           )}
 
-          <Link to="/playground" onClick={() => setMenuOpen(false)}>
+          <NavLink
+            to="/playground"
+            onClick={closeMenus}
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
             Playground
-          </Link>
+          </NavLink>
 
           {user && (
-            <Link
+            <NavLink
               to={`/student-details/${localStorage.getItem("userID")}`}
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenus}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
             >
               My Progress
-            </Link>
+            </NavLink>
           )}
 
           {/* USER MENU */}
           {user ? (
-            <>
+            <div className="user-menu">
               <button
                 className="user-toggle"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                {typeof user === "string" ? user : user?.name} ▼
+                <span className="user-name">
+                  {typeof user === "string" ? user : user?.name}
+                </span>
+                <span className="caret">▼</span>
               </button>
 
               {dropdownOpen && (
                 <div className="dropdown">
                   {localStorage.getItem("role") === '"teacher"' && (
-                    <Link
-                      to="/manage-students"
-                      onClick={() => setMenuOpen(false)}
-                    >
+                    <NavLink to="/manage-students" onClick={closeMenus}>
                       Manage Students
-                    </Link>
+                    </NavLink>
                   )}
-
                   <button onClick={handleLogout}>Logout</button>
                 </div>
               )}
-            </>
+            </div>
           ) : (
-            <Link to="/login" onClick={() => setMenuOpen(false)}>
+            <NavLink
+              to="/login"
+              onClick={closeMenus}
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
               Login
-            </Link>
+            </NavLink>
           )}
         </div>
       </div>
