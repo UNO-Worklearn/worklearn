@@ -10,10 +10,10 @@ function ForgotPassword() {
 
   const handleForgotPassword = async () => {
     try {
-        const response = await axios.post(
-            `${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`,
-            { email }
-          );          
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`,
+        { email }
+      );
       setMessage(response.data.message);
       setError("");
     } catch (error) {
@@ -26,44 +26,68 @@ function ForgotPassword() {
   return (
     <Box
       sx={{
+        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        width: "50%",
-        padding: "20px 50px",
-        margin: "auto",
-        marginTop: "50px",
-        background: "#eee",
-        boxShadow: "rgba(0, 0, 0, 0.5) 0px 1px 4px",
-        borderRadius: "8px",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 2, // mobile padding
       }}
     >
-      <Typography variant="h4">Forgot Password</Typography>
-      {message && <Alert severity="success">{message}</Alert>}
-      {error && <Alert severity="error">{error}</Alert>}
-
-      <TextField
-        label="Email"
-        type="email"
-        variant="outlined"
-        sx={{ width: "60%", margin: "20px auto", background: "#fff" }}
-        margin="normal"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-
-      <Button
-        sx={{ width: "60%", margin: "auto", marginBottom: "30px" }}
-        variant="contained"
-        color="primary"
-        onClick={handleForgotPassword}
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 420,
+          p: { xs: 3, sm: 4 },
+          backgroundColor: "#eee",
+          boxShadow: "rgba(0, 0, 0, 0.25) 0px 2px 8px",
+          borderRadius: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
       >
-        Send Reset Link
-      </Button>
+        <Typography
+          variant="h5"
+          textAlign="center"
+          fontWeight={600}
+        >
+          Forgot Password
+        </Typography>
 
-      <Link to="/login" style={{ padding: "0 20px", textDecoration: "underline" }}>
-        Back to Login
-      </Link>
+        {message && <Alert severity="success">{message}</Alert>}
+        {error && <Alert severity="error">{error}</Alert>}
+
+        <TextField
+          label="Email"
+          type="email"
+          fullWidth
+          variant="outlined"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <Button
+          fullWidth
+          variant="contained"
+          size="large"
+          onClick={handleForgotPassword}
+        >
+          Send Reset Link
+        </Button>
+
+        <Typography textAlign="center">
+          <Link
+            to="/login"
+            style={{
+              textDecoration: "underline",
+              fontWeight: 500,
+            }}
+          >
+            Back to Login
+          </Link>
+        </Typography>
+      </Box>
     </Box>
   );
 }
