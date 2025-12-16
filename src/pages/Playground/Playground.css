@@ -1,0 +1,5 @@
+.playground-container {
+  height: calc(100vh - 64px); /* navbar height */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
