@@ -176,3 +176,16 @@
     overflow-y: auto;
   }
 }
+/* ==============================
+   ACTIVE SIDEBAR ITEM
+============================== */
+.db-link.active {
+  font-weight: 700;        /* bold */
+  color: #000;             /* black text */
+}
+
+/* keep hover behavior */
+.db-link.active:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
