@@ -1,18 +1,20 @@
 /* =========================================================
-   GLOBAL (Dashboard only – body is locked in JS)
+   GLOBAL (Dashboard only – body scroll locked in JS)
 ========================================================= */
+
 .dashboard {
   display: grid;
   grid-template-columns: 260px 1fr;
   height: calc(100vh - 48px); /* header height */
   font-family: "Roboto", sans-serif;
   background: #fafafa;
-  overflow: hidden; /* 🔒 prevents parent scroll */
+  overflow: hidden; /* prevent parent scroll */
 }
 
 /* =========================================================
-   HEADER
+   HEADER (Mobile)
 ========================================================= */
+
 .dashboard-header {
   display: none;
   align-items: center;
@@ -35,28 +37,29 @@
 }
 
 /* =========================================================
-   SIDEBAR (DESKTOP)
+   SIDEBAR (Desktop)
 ========================================================= */
+
 .db-sidebar {
   background: #fff;
   border-right: 1px solid #ddd;
-
   height: 100%;
-  overflow-y: auto;               /* ✅ sidebar scroll */
+  overflow-y: auto;               /* sidebar scroll */
   overscroll-behavior: contain;
-
+  -webkit-overflow-scrolling: touch;
   padding: 16px 12px;
   box-sizing: border-box;
 }
 
 /* =========================================================
-   CONTENT (DESKTOP)
+   CONTENT (Desktop)
 ========================================================= */
+
 .db-content {
   height: 100%;
-  overflow-y: auto;               /* ✅ content scroll */
+  overflow-y: auto;               /* content scroll */
   overscroll-behavior: contain;
-
+  -webkit-overflow-scrolling: touch;
   width: 100%;
   max-width: 100%;
   padding: 24px;
@@ -66,6 +69,7 @@
 /* =========================================================
    SIDEBAR LINKS
 ========================================================= */
+
 .db-unit p {
   color: #d71920;
   font-weight: 600;
@@ -97,7 +101,7 @@
   text-decoration: none;
   color: inherit;
   flex: 1;
-  white-space: normal;           /* 🔑 FIX vertical text */
+  white-space: normal;   /* FIX vertical stacking */
   word-break: normal;
 }
 
@@ -114,6 +118,7 @@
 /* =========================================================
    DROPDOWNS
 ========================================================= */
+
 .dropdown-container {
   list-style: none;
   padding-left: 12px;
@@ -125,8 +130,9 @@
 }
 
 /* =========================================================
-   MOBILE (SINGLE SOURCE OF TRUTH)
+   MOBILE (Single source of truth)
 ========================================================= */
+
 @media (max-width: 768px) {
   /* Show header */
   .dashboard-header {
@@ -137,9 +143,10 @@
   .dashboard {
     display: block;
     height: calc(100vh - 48px);
+    overflow-x: hidden;
   }
 
-  /* Sidebar becomes overlay */
+  /* Sidebar overlay */
   .db-sidebar {
     position: fixed;
     top: 48px;
@@ -147,12 +154,10 @@
     width: 80%;
     max-width: 320px;
     height: calc(100vh - 48px);
-
     background: #fff;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 2000;
-
     overflow-y: auto;
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
   }
@@ -161,7 +166,7 @@
     transform: translateX(0);
   }
 
-  /* Content is full width */
+  /* Content full width */
   .db-content {
     width: 100vw;
     max-width: 100vw;
