@@ -37,19 +37,26 @@ function Playground() {
 
   const userID = localStorage.getItem("userID");
 
+  /* 🔑 FIX: RESTORE SCROLL (DASHBOARD LOCKS IT) */
+  useEffect(() => {
+    document.body.style.overflow = "auto";
+    document.documentElement.style.overflow = "auto";
+
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, []);
+
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
 
-  /* --------------------------------------------
-     Keyboard shortcut (Ctrl + Enter)
-  -------------------------------------------- */
+  /* Ctrl + Enter */
   useEffect(() => {
     if (enterPress && ctrlPress) handleCompile();
   }, [enterPress, ctrlPress]);
 
-  /* --------------------------------------------
-     Monaco resize fix
-  -------------------------------------------- */
+  /* Monaco resize fix */
   useEffect(() => {
     const resize = () => window.dispatchEvent(new Event("resize"));
     window.addEventListener("resize", resize);
@@ -60,9 +67,7 @@ function Playground() {
     };
   }, []);
 
-  /* --------------------------------------------
-     Theme initialization
-  -------------------------------------------- */
+  /* Theme init */
   useEffect(() => {
     defineTheme("oceanic-next").then(() =>
       setTheme({ value: "oceanic-next", label: "Oceanic Next" })
@@ -134,7 +139,6 @@ function Playground() {
   };
 
   return (
-    /* 🔑 SCROLL CONTAINER FIX */
     <div className="playground-container">
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -145,7 +149,7 @@ function Playground() {
           </TabList>
         </Box>
 
-        {/* ---------------- JS / Python ---------------- */}
+        {/* JS / Python */}
         <TabPanel value="1">
           <ToastContainer />
 
@@ -176,7 +180,6 @@ function Playground() {
 
             <div className="w-full md:w-[30%] flex flex-col gap-3">
               <OutputWindow outputDetails={outputDetails} />
-
               <CustomInput
                 customInput={customInput}
                 setCustomInput={setCustomInput}
@@ -204,12 +207,12 @@ function Playground() {
           </div>
         </TabPanel>
 
-        {/* ---------------- COBOL ---------------- */}
+        {/* COBOL */}
         <TabPanel value="2">
           <CobolCodeEditor />
         </TabPanel>
 
-        {/* ---------------- VSCode ---------------- */}
+        {/* VSCode */}
         <TabPanel value="3">
           {userID ? (
             <div className="w-full h-[80vh]">
