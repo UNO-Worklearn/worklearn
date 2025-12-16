@@ -83,7 +83,8 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   };
 
   /* --------------------------------------------------
-     🔥 AUTO-OPEN SIDEBAR BASED ON URL (KEY FIX)
+     🔥 AUTO-OPEN SIDEBAR BASED ON URL
+     🔧 FIXED FOR DESKTOP + MOBILE
   -------------------------------------------------- */
   useEffect(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -104,7 +105,17 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
     if (Number.isNaN(topicIndex)) return;
 
     const mainKey = `${unitIndex}-${topicIndex}`;
-    setIsActive({ [mainKey]: true });
+
+    // 🔧 FIX: merge on desktop, replace on mobile
+    setIsActive((prev) => {
+      if (isMobile) {
+        return { [mainKey]: true };
+      }
+      return {
+        ...prev,
+        [mainKey]: true,
+      };
+    });
 
     // open nested if needed
     if (contentId) {
@@ -115,10 +126,20 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
 
       if (contentIndex !== -1 && subContentId) {
         const nestedKey = `${unitIndex}-${topicIndex}-${contentIndex}`;
-        setIsActive2({ [nestedKey]: true });
+
+        // 🔧 FIX: merge on desktop, replace on mobile
+        setIsActive2((prev) => {
+          if (isMobile) {
+            return { [nestedKey]: true };
+          }
+          return {
+            ...prev,
+            [nestedKey]: true,
+          };
+        });
       }
     }
-  }, [location.pathname]);
+  }, [location.pathname, isMobile]);
 
   // close sidebar automatically on desktop
   useEffect(() => {
