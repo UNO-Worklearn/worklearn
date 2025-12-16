@@ -48,7 +48,7 @@ function Playground() {
   }, [enterPress, ctrlPress]);
 
   /* --------------------------------------------
-     Monaco resize fix (mobile + orientation)
+     Monaco resize fix
   -------------------------------------------- */
   useEffect(() => {
     const resize = () => window.dispatchEvent(new Event("resize"));
@@ -134,7 +134,8 @@ function Playground() {
   };
 
   return (
-    <>
+    /* 🔑 SCROLL CONTAINER FIX */
+    <div className="playground-container">
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={(e, v) => setValue(v)}>
@@ -148,7 +149,6 @@ function Playground() {
         <TabPanel value="1">
           <ToastContainer />
 
-          {/* Controls */}
           <div className="flex flex-col sm:flex-row gap-4 px-4 py-2">
             <div>
               <Typography variant="caption">Language</Typography>
@@ -157,13 +157,14 @@ function Playground() {
 
             <div>
               <Typography variant="caption">Theme</Typography>
-              <ThemeDropdown theme={theme} handleThemeChange={handleThemeChange} />
+              <ThemeDropdown
+                theme={theme}
+                handleThemeChange={handleThemeChange}
+              />
             </div>
           </div>
 
-          {/* Editor + Output */}
           <div className="flex flex-col md:flex-row gap-4 px-4 py-4">
-            {/* Editor */}
             <div className="w-full min-h-[300px] md:min-h-[500px]">
               <CodeEditorWindow
                 code={code}
@@ -173,7 +174,6 @@ function Playground() {
               />
             </div>
 
-            {/* Output */}
             <div className="w-full md:w-[30%] flex flex-col gap-3">
               <OutputWindow outputDetails={outputDetails} />
 
@@ -197,7 +197,9 @@ function Playground() {
                 </Button>
               )}
 
-              {outputDetails && <OutputDetails outputDetails={outputDetails} />}
+              {outputDetails && (
+                <OutputDetails outputDetails={outputDetails} />
+              )}
             </div>
           </div>
         </TabPanel>
@@ -222,7 +224,7 @@ function Playground() {
           )}
         </TabPanel>
       </TabContext>
-    </>
+    </div>
   );
 }
 
