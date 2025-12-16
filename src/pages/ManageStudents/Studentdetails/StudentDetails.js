@@ -13,11 +13,14 @@ import Login from "../../Login/Login";
 
 import "./StudentDetails.css";
 
-function StudentDetails({ user, getUser, totalScore }) {
+function StudentDetails({ user, totalScore }) {
   const { userId } = useParams();
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
+  /* ----------------------------------------
+     Fetch student
+  ---------------------------------------- */
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -33,8 +36,7 @@ function StudentDetails({ user, getUser, totalScore }) {
       }
     };
 
-    const delay = setTimeout(fetchUser, 1500);
-    return () => clearTimeout(delay);
+    fetchUser();
   }, [userId]);
 
   /* ----------------------------------------
@@ -42,10 +44,10 @@ function StudentDetails({ user, getUser, totalScore }) {
   ---------------------------------------- */
 
   const getProgressColor = (percent) => {
-    if (percent >= 100) return "#2e7d32"; // green
-    if (percent >= 75) return "#0288d1";  // blue
-    if (percent >= 50) return "#ed6c02";  // orange
-    return "#d32f2f";                     // red
+    if (percent >= 100) return "#2e7d32";
+    if (percent >= 75) return "#0288d1";
+    if (percent >= 50) return "#ed6c02";
+    return "#d32f2f";
   };
 
   const calculateOverallProgress = () => {
@@ -53,31 +55,12 @@ function StudentDetails({ user, getUser, totalScore }) {
       return { percent: 0, completed: 0, total: 0 };
     }
 
-    const scorePairs = [
-      "introScore",
-      "decompositionScore",
-      "patternScore",
-      "abstractionScore",
-      "algorithmScore",
-      "reviewScore",
-      "pythonOneScore",
-      "pythonTwoScore",
-      "pythonThreeScore",
-      "pythonFiveScore",
-      "pythonSixScore",
-      "pythonSevenScore",
-      "mainframeOneScore",
-      "mainframeTwoScore",
-      "mainframeThreeScore",
-      "mainframeFourScore",
-      "mainframeFiveScore",
-      "mainframeSixScore",
-    ];
+    const scoreKeys = Object.keys(totalScore);
 
     let completed = 0;
     let total = 0;
 
-    scorePairs.forEach((key) => {
+    scoreKeys.forEach((key) => {
       const score = currentUser[key];
       const max = totalScore[key];
 
@@ -105,10 +88,7 @@ function StudentDetails({ user, getUser, totalScore }) {
           <LinearProgress
             variant="determinate"
             value={percent}
-            sx={{
-              height: 8,
-              borderRadius: 4,
-            }}
+            sx={{ height: 8, borderRadius: 4 }}
           />
         </Grid>
 
@@ -131,7 +111,8 @@ function StudentDetails({ user, getUser, totalScore }) {
   if (!user) return <Login />;
 
   return (
-    <div className="student-details">
+    /* 🔑 SCROLL CONTAINER */
+    <div className="student-details-container">
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="h4">Course Progress</Typography>
@@ -141,7 +122,7 @@ function StudentDetails({ user, getUser, totalScore }) {
           <Grid
             item
             xs={12}
-            mt={5}
+            mt={6}
             sx={{ display: "flex", justifyContent: "center" }}
           >
             <CircularProgress color="error" />
@@ -154,7 +135,6 @@ function StudentDetails({ user, getUser, totalScore }) {
                 {(() => {
                   const { percent, completed, total } =
                     calculateOverallProgress();
-                  const barColor = getProgressColor(percent);
 
                   return (
                     <>
@@ -172,21 +152,14 @@ function StudentDetails({ user, getUser, totalScore }) {
                               borderRadius: 6,
                               backgroundColor: "#e0e0e0",
                               "& .MuiLinearProgress-bar": {
-                                backgroundColor: barColor,
+                                backgroundColor: getProgressColor(percent),
                                 borderRadius: 6,
                               },
                             }}
                           />
                         </Grid>
 
-                        <Grid
-                          item
-                          xs={12}
-                          sm={2}
-                          sx={{
-                            textAlign: { xs: "left", sm: "right" },
-                          }}
-                        >
+                        <Grid item xs={12} sm={2}>
                           <Typography variant="body2" fontWeight={500}>
                             {completed} / {total} ({percent}%)
                           </Typography>
