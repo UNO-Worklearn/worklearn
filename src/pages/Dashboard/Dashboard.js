@@ -23,7 +23,7 @@ import NestedContent from "./Topics/Content/SubContent/NestedContent/NestedConte
 import Sidebar from "./Sidebar/Sidebar";
 
 /* --------------------------------------------------
-   Helper components
+   Helper
 -------------------------------------------------- */
 function CircularProgressWithLabel(props) {
   return (
@@ -65,7 +65,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   const [notificationSeverity, setNotificationSeverity] = useState("success");
 
   /* --------------------------------------------------
-     🔒 LOCK BODY SCROLL (CRITICAL)
+     🔒 Lock body scroll while Dashboard is mounted
   -------------------------------------------------- */
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -93,8 +93,9 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   };
 
   /* --------------------------------------------------
-     🔥 AUTO-OPEN SIDEBAR BASED ON URL
-     (MERGE ON DESKTOP, ACCORDION ON MOBILE)
+     🔥 Auto-open sidebar based on URL
+     - Desktop: merge
+     - Mobile: accordion
   -------------------------------------------------- */
   useEffect(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -139,7 +140,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   }, [location.pathname, isMobile]);
 
   /* --------------------------------------------------
-     Close sidebar on desktop
+     Close sidebar automatically on desktop
   -------------------------------------------------- */
   useEffect(() => {
     if (!isMobile) setSidebarOpen(false);
@@ -177,7 +178,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   -------------------------------------------------- */
   return (
     <>
-      {/* MOBILE HEADER */}
+      {/* Mobile Header */}
       <div className="dashboard-header">
         <button
           className="sidebar-toggle"
@@ -189,7 +190,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
       </div>
 
       <div className="dashboard">
-        {/* SIDEBAR */}
+        {/* Sidebar */}
         <Sidebar
           data={data}
           sidebarOpen={sidebarOpen}
@@ -201,7 +202,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
           onNavigate={onNavigate}
         />
 
-        {/* CONTENT */}
+        {/* Content */}
         {user ? (
           <div className="db-content">
             <Notification
@@ -231,6 +232,9 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   );
 }
 
+/* --------------------------------------------------
+   Redux
+-------------------------------------------------- */
 const mapStateToProps = (state) => ({
   user: state.user.user,
   progress: state.user.progress,
