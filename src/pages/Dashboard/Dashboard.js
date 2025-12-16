@@ -54,7 +54,7 @@ function CircularProgressWithLabel(props) {
 -------------------------------------------------- */
 function Dashboard({ user, role, progress, setUser, setProgress }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // ✅ reactive
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -65,7 +65,17 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
   const [notificationSeverity, setNotificationSeverity] = useState("success");
 
   /* --------------------------------------------------
-     Effects
+     🔒 LOCK BODY SCROLL (CRITICAL)
+  -------------------------------------------------- */
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  /* --------------------------------------------------
+     Notifications
   -------------------------------------------------- */
   useEffect(() => {
     if (user) {
@@ -84,7 +94,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
 
   /* --------------------------------------------------
      🔥 AUTO-OPEN SIDEBAR BASED ON URL
-     🔧 FIXED FOR DESKTOP + MOBILE
+     (MERGE ON DESKTOP, ACCORDION ON MOBILE)
   -------------------------------------------------- */
   useEffect(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -106,18 +116,11 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
 
     const mainKey = `${unitIndex}-${topicIndex}`;
 
-    // 🔧 FIX: merge on desktop, replace on mobile
     setIsActive((prev) => {
-      if (isMobile) {
-        return { [mainKey]: true };
-      }
-      return {
-        ...prev,
-        [mainKey]: true,
-      };
+      if (isMobile) return { [mainKey]: true };
+      return { ...prev, [mainKey]: true };
     });
 
-    // open nested if needed
     if (contentId) {
       const subTopic = data[unitIndex]?.subTopics?.[topicIndex];
       const contentIndex = subTopic?.contents?.findIndex(
@@ -127,21 +130,17 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
       if (contentIndex !== -1 && subContentId) {
         const nestedKey = `${unitIndex}-${topicIndex}-${contentIndex}`;
 
-        // 🔧 FIX: merge on desktop, replace on mobile
         setIsActive2((prev) => {
-          if (isMobile) {
-            return { [nestedKey]: true };
-          }
-          return {
-            ...prev,
-            [nestedKey]: true,
-          };
+          if (isMobile) return { [nestedKey]: true };
+          return { ...prev, [nestedKey]: true };
         });
       }
     }
   }, [location.pathname, isMobile]);
 
-  // close sidebar automatically on desktop
+  /* --------------------------------------------------
+     Close sidebar on desktop
+  -------------------------------------------------- */
   useEffect(() => {
     if (!isMobile) setSidebarOpen(false);
   }, [isMobile]);
@@ -153,7 +152,7 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
     const key = `${unitIndex}-${subTopicIndex}`;
 
     setIsActive((prev) => {
-      if (isMobile) return { [key]: !prev[key] }; // accordion
+      if (isMobile) return { [key]: !prev[key] };
       return { ...prev, [key]: !prev[key] };
     });
 
@@ -190,14 +189,6 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
       </div>
 
       <div className="dashboard">
-        {/* MOBILE BACKDROP */}
-        {isMobile && sidebarOpen && (
-          <div
-            className="sidebar-backdrop"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
         {/* SIDEBAR */}
         <Sidebar
           data={data}
