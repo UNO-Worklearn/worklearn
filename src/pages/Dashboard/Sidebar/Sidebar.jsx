@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Link, useLocation } from "react-router-dom";
-import { HashLink } from "react-router-hash-link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 export default function Sidebar({
@@ -15,133 +14,132 @@ export default function Sidebar({
 }) {
   const location = useLocation();
 
-  const isActivePath = (to) => location.pathname.startsWith(to);
+  const isActivePath = (to) => location.pathname === to;
 
   return (
-    <div className={`db-sidebar ${sidebarOpen ? "open" : ""}`}>
-      {data.map((item, unitIndex) => (
-        <div key={item.id}>
+    <aside className={`db-sidebar ${sidebarOpen ? "open" : ""}`}>
+      {data.map((unit, unitIndex) => (
+        <div key={unit.id}>
+          {/* UNIT TITLE */}
           <div className="db-unit">
-            <p>{item.topicName}</p>
+            <p>{unit.topicName}</p>
           </div>
 
           <div className="db-items">
-            {/* Home only for first unit */}
+            {/* HOME (only once) */}
             {unitIndex === 0 && (
               <div className="db-item">
-                <div className="db-link">
-                  <Link
-                    to="/dashboard"
-                    className={isActivePath("/dashboard") ? "active-link" : ""}
-                    onClick={onNavigate}
-                  >
-                    Home
-                  </Link>
+                <div
+                  className={`db-link ${
+                    location.pathname === "/dashboard" ? "active" : ""
+                  }`}
+                  onClick={onNavigate}
+                >
+                  <Link to="/dashboard">Home</Link>
                 </div>
               </div>
             )}
 
-            {item.subTopics.map((subTopic, subTopicIndex) => {
+            {unit.subTopics.map((subTopic, subTopicIndex) => {
               const mainKey = `${unitIndex}-${subTopicIndex}`;
-              const hasDropdown =
+              const hasChildren =
                 Array.isArray(subTopic.contents) &&
                 subTopic.contents.length > 0;
 
               return (
-                <div key={mainKey}>
-                  {hasDropdown ? (
-                    <div className="db-item">
-                      <div className="db-link">
-                        <HashLink
-                          to="#"
-                          onClick={() =>
-                            toggleDropdown(unitIndex, subTopicIndex)
-                          }
-                        >
-                          {subTopic.name}
-                        </HashLink>
+                <div key={mainKey} className="db-item">
+                  {/* MAIN TOPIC */}
+                  <div
+                    className={`db-link ${
+                      isActive[mainKey] ? "active" : ""
+                    }`}
+                    onClick={() =>
+                      hasChildren &&
+                      toggleDropdown(unitIndex, subTopicIndex)
+                    }
+                  >
+                    {hasChildren ? (
+                      <>
+                        <span>{subTopic.name}</span>
                         <ArrowDropDownIcon />
-                      </div>
+                      </>
+                    ) : (
+                      <Link
+                        to={`/dashboard/${unit.id}/${subTopicIndex + 1}`}
+                        onClick={onNavigate}
+                      >
+                        {subTopic.name}
+                      </Link>
+                    )}
+                  </div>
 
-                      {isActive[mainKey] && (
-                        <ul className="dropdown-container">
-                          {subTopic.contents.map((subContent, contentIndex) => {
-                            const nestedKey = `${unitIndex}-${subTopicIndex}-${contentIndex}`;
+                  {/* LEVEL 2 */}
+                  {hasChildren && isActive[mainKey] && (
+                    <ul className="dropdown-container">
+                      {subTopic.contents.map((content, contentIndex) => {
+                        const nestedKey = `${unitIndex}-${subTopicIndex}-${contentIndex}`;
 
-                            if (!subContent.contents) {
-                              const to = `/dashboard/${item.id}/${subTopicIndex + 1}/${subContent.id}`;
-                              return (
-                                <li key={subContent.id}>
-                                  <Link
-                                    to={to}
-                                    className={
-                                      isActivePath(to) ? "active-link" : ""
-                                    }
-                                    onClick={onNavigate}
-                                  >
-                                    {subContent.topic}
-                                  </Link>
-                                </li>
-                              );
-                            }
+                        // NO NESTED LEVEL
+                        if (!content.contents) {
+                          const to = `/dashboard/${unit.id}/${subTopicIndex + 1}/${content.id}`;
 
-                            return (
+                          return (
+                            <li key={content.id}>
                               <div
-                                key={subContent.id}
-                                className="db-item mod-1"
+                                className={`db-link ${
+                                  isActivePath(to) ? "active" : ""
+                                }`}
+                                onClick={onNavigate}
                               >
-                                <HashLink
-                                  to="#"
-                                  onClick={() =>
-                                    toggleDropdown2(
-                                      unitIndex,
-                                      subTopicIndex,
-                                      contentIndex
-                                    )
-                                  }
-                                >
-                                  {subContent.topic}
-                                </HashLink>
-
-                                {isActive2[nestedKey] && (
-                                  <ul className="dropdown-container">
-                                    {subContent.contents.map((nested) => {
-                                      const to = `/dashboard/${item.id}/${subTopicIndex + 1}/${subContent.id}/${nested.id}`;
-                                      return (
-                                        <li key={nested.id}>
-                                          <Link
-                                            to={to}
-                                            className={
-                                              isActivePath(to)
-                                                ? "active-link"
-                                                : ""
-                                            }
-                                            onClick={onNavigate}
-                                          >
-                                            {nested.topic}
-                                          </Link>
-                                        </li>
-                                      );
-                                    })}
-                                  </ul>
-                                )}
+                                <Link to={to}>{content.topic}</Link>
                               </div>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="db-item">
-                      <div className="db-link">
-                        <Link
-                          to={`/dashboard/${unitIndex + 1}/${subTopic.id}`}
-                          onClick={onNavigate}
-                        >
-                          {subTopic.name}
-                        </Link>
-                      </div>
-                    </div>
+                            </li>
+                          );
+                        }
+
+                        // LEVEL 3
+                        return (
+                          <li key={content.id}>
+                            <div
+                              className={`db-link ${
+                                isActive2[nestedKey] ? "active" : ""
+                              }`}
+                              onClick={() =>
+                                toggleDropdown2(
+                                  unitIndex,
+                                  subTopicIndex,
+                                  contentIndex
+                                )
+                              }
+                            >
+                              <span>{content.topic}</span>
+                              <ArrowDropDownIcon />
+                            </div>
+
+                            {isActive2[nestedKey] && (
+                              <ul className="dropdown-container">
+                                {content.contents.map((nested) => {
+                                  const to = `/dashboard/${unit.id}/${subTopicIndex + 1}/${content.id}/${nested.id}`;
+
+                                  return (
+                                    <li key={nested.id}>
+                                      <div
+                                        className={`db-link ${
+                                          isActivePath(to) ? "active" : ""
+                                        }`}
+                                        onClick={onNavigate}
+                                      >
+                                        <Link to={to}>{nested.topic}</Link>
+                                      </div>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
                   )}
                 </div>
               );
@@ -149,6 +147,6 @@ export default function Sidebar({
           </div>
         </div>
       ))}
-    </div>
+    </aside>
   );
 }
