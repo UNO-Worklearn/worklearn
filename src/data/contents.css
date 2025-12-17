@@ -1,0 +1,30 @@
+.content-block {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem;
+  line-height: 1.6;
+}
+
+.content-block p,
+.content-block li {
+  font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+  .content-block p,
+  .content-block li {
+    font-size: 1.05rem;
+  }
+}
+
+.primary-link {
+  display: block;
+  text-align: center;
+  margin: 1.25rem 0;
+  padding: 0.85rem 1rem;
+  background: #005fcc;
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
