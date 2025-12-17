@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import "./Sidebar.css";
 
+
 export default function Sidebar({
   data,
   sidebarOpen,
