@@ -1,22 +1,70 @@
+/* Main content wrapper */
 .content-block {
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
   padding: 1rem;
   line-height: 1.6;
 }
 
+/* Paragraphs & list items */
 .content-block p,
 .content-block li {
   font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
+/* ✅ HEADINGS — THIS FIXES THE ISSUE */
+.content-block h1,
+.content-block h2,
+.content-block h3 {
+  max-width: 100%;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.25;
+  text-align: center;
+  margin: 1.5rem 0 1rem;
+}
+
+/* Desktop heading sizes */
+.content-block h1 {
+  font-size: 2rem;
+}
+
+.content-block h2 {
+  font-size: 1.5rem;
+}
+
+.content-block h3 {
+  font-size: 1.25rem;
+}
+
+/* Mobile typography */
 @media (max-width: 600px) {
+  .content-block {
+    padding: 1rem 0.75rem;
+  }
+
   .content-block p,
   .content-block li {
     font-size: 1.05rem;
   }
+
+  .content-block h1 {
+    font-size: 1.5rem;
+  }
+
+  .content-block h2 {
+    font-size: 1.25rem;
+  }
+
+  .content-block h3 {
+    font-size: 1.1rem;
+  }
 }
 
+/* Primary call-to-action link */
 .primary-link {
   display: block;
   text-align: center;
