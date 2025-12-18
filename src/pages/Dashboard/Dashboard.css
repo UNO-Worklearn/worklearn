@@ -223,3 +223,24 @@
   margin: 0 auto;
   overflow-x: hidden;
 }
+.payment {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.payment p,
+.payment ul {
+  margin-top: 20px;
+}
+
+.payment ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.payment * {
+  max-width: 100%;
+  white-space: normal;
+}
+

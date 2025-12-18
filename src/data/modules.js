@@ -46,36 +46,59 @@ const data = [
           id: 3,
           name: "Payment",
           content: `
-              <div class="payment">
-                 <p>For participating in the WorkLearn class, you can earn up to $1000. WorkLearn follows the Siena Francis House bi-weekly payment schedule. Successfully achieved tasks will be paid out in your bi-weekly checks.</p>
-                 <p>Here is an overview of the units to understand how they align to the payments.</p>
-                 <ul>
-                 <li>Introductory Interview: $15</li>
-                 <li>Getting Started: $5</li>
-                 <li>Computational Thinking: $100</li>
-                 <li>Professional Skills: $25</li>
-                 <li>Python: $170</li>
-                 <li>COBOL: $170</li>
-                 <li>WebDev Challenges: $250</li>
-                 <li>Mainframe Challenges: $250</li>
-                 <li>Exit Interview: $15</li>
-                 </ul>
-                 <p>There are two types of payments: Complete/Incomplete and Content Mastery.</p>
-                 <p>We will use Complete/Incomplete-type payments when we ask you to complete a task that is not linked to learning new materials. For example, if there are surveys or interviews, we need you to complete the task but we do not need you to prepare any new materials first.</p>
-                 <p>We will use Content Mastery-type payments when we ask you to complete a task that is linked to your having studied the materials or using knowledge that you have gained in previous units. For Content Mastery-type payments, we require that you achieve at least 80% correctness on the tasks.</p>
-                 <p>Content Mastery payments will have different tasks associated with them. Sometimes, you will be asked to take a quiz or write short answers to show content mastery; sometimes you will need to write code to create small programs or correct bugs. Learning materials and Challenges are Content Mastery-type payments.</p>
-              </div>
-              <style>
-              .payment p, .payment ul {
-                margin-top: 20px;
-              }
-              .payment ul {
-                list-style-type: disc;
-                margin-left: 20px;
-              }
-              </style> 
-              `,
-        },
+            <div class="payment">
+              <p>
+                For participating in the WorkLearn class, you can earn up to $1000.
+                WorkLearn follows the Siena Francis House bi-weekly payment schedule.
+                Successfully achieved tasks will be paid out in your bi-weekly checks.
+              </p>
+        
+              <p>
+                Here is an overview of the units to understand how they align to the payments.
+              </p>
+        
+              <ul>
+                <li>Introductory Interview: $15</li>
+                <li>Getting Started: $5</li>
+                <li>Computational Thinking: $100</li>
+                <li>Professional Skills: $25</li>
+                <li>Python: $170</li>
+                <li>COBOL: $170</li>
+                <li>WebDev Challenges: $250</li>
+                <li>Mainframe Challenges: $250</li>
+                <li>Exit Interview: $15</li>
+              </ul>
+        
+              <p>
+                There are two types of payments: Complete/Incomplete and Content Mastery.
+              </p>
+        
+              <p>
+                We will use Complete/Incomplete-type payments when we ask you to complete
+                a task that is not linked to learning new materials. For example, if there
+                are surveys or interviews, we need you to complete the task but we do not
+                need you to prepare any new materials first.
+              </p>
+        
+              <p>
+                We will use Content Mastery-type payments when we ask you to complete a task
+                that is linked to your having studied the materials or using knowledge that
+                you have gained in previous units. For Content Mastery-type payments, we
+                require that you achieve at least 80% correctness on the tasks.
+              </p>
+        
+              <p>
+                Content Mastery payments will have different tasks associated with them.
+                Sometimes, you will be asked to take a quiz or write short answers to show
+                content mastery; sometimes you will need to write code to create small
+                programs or correct bugs. Learning materials and Challenges are Content
+                Mastery-type payments.
+              </p>
+            </div>
+          `,
+        }
+
+        ,
         {
           id: 4,
           name: "Tutorial on How to Navigate in Work-Learn Application",
