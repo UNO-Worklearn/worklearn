@@ -1,6 +1,3 @@
-/* =========================================================
-   GLOBAL (Dashboard only – body scroll locked in JS)
-========================================================= */
 
 .dashboard {
   display: grid;
@@ -37,18 +34,27 @@
 }
 
 /* =========================================================
-   SIDEBAR (Desktop)
+   SIDEBAR – SINGLE SOURCE OF TRUTH
 ========================================================= */
 
 .db-sidebar {
+  width: 260px;
+  height: 100%;
   background: #fff;
   border-right: 1px solid #ddd;
-  height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   padding: 16px 12px;
   box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Text wrapping safety */
+.db-sidebar * {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 /* =========================================================
@@ -62,6 +68,7 @@
   -webkit-overflow-scrolling: touch;
   width: 100%;
   max-width: 100%;
+  min-width: 0;              /* 🔑 prevents text collapse */
   padding: 24px;
   box-sizing: border-box;
 }
@@ -145,9 +152,10 @@
     display: flex;
   }
 
-  /* Switch layout model */
+  /* Disable grid COMPLETELY */
   .dashboard {
-    display: block;
+    display: block !important;
+    grid-template-columns: none !important;
     height: auto;
     min-height: calc(100vh - 48px);
     overflow-x: hidden;
@@ -161,11 +169,10 @@
     width: 80%;
     max-width: 320px;
     height: calc(100vh - 48px);
-    background: #fff;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 2000;
-    overflow-y: auto;
+    background: #fff;
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.25);
   }
 
@@ -173,37 +180,42 @@
     transform: translateX(0);
   }
 
-  /* ===== CONTENT FIX (THIS FIXES YOUR SCREENSHOT) ===== */
+  /* CONTENT (mobile) */
   .db-content {
     width: 100%;
     max-width: 100%;
-    min-height: calc(100vh - 48px);
+    min-width: 0;
     padding: 16px;
-    box-sizing: border-box;
-
-    /* KEY FIXES */
     height: auto;
-    overflow-y: visible;
-    overflow-x: hidden;
-    text-align: left;
+    overflow: visible;
+    box-sizing: border-box;
   }
 
-  /* Prevent word-per-line stacking */
+  /* Prevent word-per-line issue */
   .db-content * {
     max-width: 100%;
-  }
-
-  .db-content h1,
-  .db-content h2,
-  .db-content h3,
-  .db-content p,
-  .db-content a,
-  .db-content span {
     white-space: normal;
     word-break: normal;
   }
 }
 
+/* =========================================================
+   GLOBAL TEXT SAFETY
+========================================================= */
+
+.db-content h1,
+.db-content h2,
+.db-content h3,
+.db-content p,
+.db-content a,
+.db-content span {
+  white-space: normal;
+  word-break: normal;
+}
+
+/* =========================================================
+   PAGE WRAPPER
+========================================================= */
 
 .dashboard-page {
   width: 100%;
