@@ -94,8 +94,6 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
 
   /* --------------------------------------------------
      🔥 Auto-open sidebar based on URL
-     - Desktop: merge
-     - Mobile: accordion
   -------------------------------------------------- */
   useEffect(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -190,17 +188,19 @@ function Dashboard({ user, role, progress, setUser, setProgress }) {
       </div>
 
       <div className="dashboard">
-        {/* Sidebar */}
-        <Sidebar
-          data={data}
-          sidebarOpen={sidebarOpen}
-          isMobile={isMobile}
-          isActive={isActive}
-          isActive2={isActive2}
-          toggleDropdown={toggleDropdown}
-          toggleDropdown2={toggleDropdown2}
-          onNavigate={onNavigate}
-        />
+        {/* ✅ Sidebar rendered ONLY on desktop OR when open on mobile */}
+        {(!isMobile || sidebarOpen) && (
+          <Sidebar
+            data={data}
+            sidebarOpen={sidebarOpen}
+            isMobile={isMobile}
+            isActive={isActive}
+            isActive2={isActive2}
+            toggleDropdown={toggleDropdown}
+            toggleDropdown2={toggleDropdown2}
+            onNavigate={onNavigate}
+          />
+        )}
 
         {/* Content */}
         {user ? (
