@@ -10,32 +10,41 @@ function Home({ user }) {
   const [videoReady, setVideoReady] = useState(false);
 
   // -----------------------------------------
-  // ✅ Prevent fast-forwarding (MUST RUN BEFORE ANY RETURN)
+  // 🔒 STRONG seek / fast-forward prevention
   // -----------------------------------------
   useEffect(() => {
-    let lastTime = 0;
+    let maxTime = 0;
 
-    const preventSkip = () => {
-      const video = videoRef.current;
-      if (!video) return;
+    const onTimeUpdate = () => {
+      const v = videoRef.current;
+      if (!v || v.seeking) return;
+      maxTime = Math.max(maxTime, v.currentTime);
+    };
 
-      if (video.currentTime > lastTime + 0.25) {
-        video.currentTime = lastTime;
-      } else {
-        lastTime = video.currentTime;
+    const onSeeking = () => {
+      const v = videoRef.current;
+      if (!v) return;
+      if (v.currentTime > maxTime + 0.1) {
+        v.currentTime = maxTime;
       }
     };
 
-    const vid = videoRef.current;
-    if (vid) vid.addEventListener("timeupdate", preventSkip);
+    const v = videoRef.current;
+    if (v) {
+      v.addEventListener("timeupdate", onTimeUpdate);
+      v.addEventListener("seeking", onSeeking);
+    }
 
     return () => {
-      if (vid) vid.removeEventListener("timeupdate", preventSkip);
+      if (v) {
+        v.removeEventListener("timeupdate", onTimeUpdate);
+        v.removeEventListener("seeking", onSeeking);
+      }
     };
   }, []);
 
   // -----------------------------------------
-  // Redirect AFTER all hooks have run
+  // Redirect AFTER hooks
   // -----------------------------------------
   if (user) {
     return <Navigate to="/dashboard" replace />;
@@ -48,16 +57,16 @@ function Home({ user }) {
   return (
     <Box className="home-container">
 
-      {/* Video section only for logged-out users */}
-      <Box className="video-wrapper" style={{textAlign: "center"}}>
+      {/* Video section */}
+      <Box className="video-wrapper" style={{ textAlign: "center" }}>
 
         {!showSignup && (
-            <Typography
-                className="watch-message"
-                style={{marginBottom: "10px", fontStyle: "italic"}}
-            >
-              Please watch the full video to unlock sign up.
-            </Typography>
+          <Typography
+            className="watch-message"
+            style={{ marginBottom: "10px", fontStyle: "italic" }}
+          >
+            Please watch the full video to unlock sign up.
+          </Typography>
         )}
 
         <video
@@ -70,11 +79,15 @@ function Home({ user }) {
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
           crossOrigin="anonymous"
-          onCanPlayThrough={() => setVideoReady(true)}
+          onLoadedData={() => setVideoReady(true)}
           onEnded={handleVideoEnd}
           onContextMenu={(e) => e.preventDefault()}
           className={`intro-video ${videoReady ? "show" : ""}`}
-          style={{ width: "100%", maxWidth: "800px", borderRadius: "12px" }}
+          style={{
+            width: "100%",
+            maxWidth: "800px",
+            borderRadius: "12px"
+          }}
         >
           <source
             src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
@@ -84,20 +97,20 @@ function Home({ user }) {
         </video>
 
         {showSignup && (
-            <Button
-                variant="contained"
-                color="primary"
-                href="/register"
-                className="signup-button"
-                style={{marginTop: "20px"}}
-            >
-              Create Your Account
-            </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            href="/register"
+            className="signup-button"
+            style={{ marginTop: "20px" }}
+          >
+            Create Your Account
+          </Button>
         )}
       </Box>
 
-      {/* Main text content */}
-      <Box className="home-text-section" style={{paddingTop: "40px"}}>
+      {/* Text content */}
+      <Box className="home-text-section" style={{ paddingTop: "40px" }}>
         <Typography variant="h4" gutterBottom className="home-title">
           Welcome to the Work-Learn Project!
         </Typography>
