@@ -7,8 +7,11 @@ import "./Home.css";
 function Home({ user }) {
   const videoRef = useRef(null);
 
+  // Use refs for "gate" state to avoid effect dependency issues / re-renders
+  const maxWatchedRef = useRef(0);
+  const unlockedRef = useRef(false);
+
   const [videoReady, setVideoReady] = useState(false);
-  const [maxWatched, setMaxWatched] = useState(0);
   const [showSignup, setShowSignup] = useState(false);
 
   // -----------------------------------------
@@ -19,7 +22,7 @@ function Home({ user }) {
   }
 
   // -----------------------------------------
-  // Bulletproof video gate
+  // Bulletproof video gate (MUI v4 + Vercel safe)
   // -----------------------------------------
   useEffect(() => {
     const video = videoRef.current;
@@ -30,52 +33,69 @@ function Home({ user }) {
     };
 
     const handleTimeUpdate = () => {
-      if (!video.duration || video.seeking) return;
+      // Some browsers briefly report 0/NaN duration
+      if (!video.duration || Number.isNaN(video.duration)) return;
+      if (video.seeking) return;
 
-      setMaxWatched(prev => {
-        const current = Math.max(prev, video.currentTime);
+      // Track maximum watched time
+      if (video.currentTime > maxWatchedRef.current) {
+        maxWatchedRef.current = video.currentTime;
+      }
 
-        // Unlock signup at 95%
-        if (current / video.duration >= 0.95) {
-          setShowSignup(true);
-        }
-
-        return current;
-      });
+      // Unlock at 95% watched (avoids unreliable onEnded)
+      if (!unlockedRef.current && maxWatchedRef.current / video.duration >= 0.95) {
+        unlockedRef.current = true;
+        setShowSignup(true);
+      }
     };
 
     const handleSeeking = () => {
-      if (video.currentTime > maxWatched + 0.25) {
-        video.currentTime = maxWatched;
+      // Prevent fast-forwarding beyond watched point (allow small drift)
+      const allowed = maxWatchedRef.current + 0.25;
+
+      // If duration isn't known yet, don't enforce
+      if (!video.duration || Number.isNaN(video.duration)) return;
+
+      // Allow seeking backward freely; block seeking forward past allowed
+      if (video.currentTime > allowed) {
+        video.currentTime = maxWatchedRef.current;
+      }
+    };
+
+    const handleEnded = () => {
+      // Backup: if ended fires, unlock as well
+      if (!unlockedRef.current) {
+        unlockedRef.current = true;
+        setShowSignup(true);
       }
     };
 
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("seeking", handleSeeking);
+    video.addEventListener("ended", handleEnded);
 
     return () => {
       video.removeEventListener("loadedmetadata", handleLoadedMetadata);
       video.removeEventListener("timeupdate", handleTimeUpdate);
       video.removeEventListener("seeking", handleSeeking);
+      video.removeEventListener("ended", handleEnded);
     };
-  }, [maxWatched]);
+  }, []);
 
   // -----------------------------------------
   // Render
   // -----------------------------------------
   return (
     <Box className="home-container">
-
       {/* Video Section */}
-      <Box className="video-wrapper" sx={{ textAlign: "center" }}>
-
+      <Box className="video-wrapper" style={{ textAlign: "center" }}>
         {!showSignup && (
           <Typography
-            sx={{
-              mb: 2,
+            style={{
+              marginBottom: "16px",
               fontStyle: "italic",
-              color: "text.secondary"
+              opacity: 0.7
             }}
           >
             Please watch the full video to unlock sign up.
@@ -89,12 +109,14 @@ function Home({ user }) {
           playsInline
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
-          onContextMenu={e => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
           style={{
             width: "100%",
             maxWidth: "800px",
             borderRadius: "12px",
-            backgroundColor: "#000"
+            backgroundColor: "#000",
+            // Optional: fade in once ready (if your CSS uses .show)
+            opacity: videoReady ? 1 : 0
           }}
         >
           <source
@@ -109,7 +131,7 @@ function Home({ user }) {
             variant="contained"
             color="primary"
             href="/register"
-            sx={{ mt: 3 }}
+            style={{ marginTop: "24px" }}
           >
             Create Your Account
           </Button>
@@ -117,33 +139,31 @@ function Home({ user }) {
       </Box>
 
       {/* Text Content */}
-      <Box className="home-text-section" sx={{ pt: 5 }}>
-        <Typography variant="h4" gutterBottom>
+      <Box className="home-text-section" style={{ paddingTop: "40px" }}>
+        <Typography variant="h4" gutterBottom className="home-title">
           Welcome to the Work-Learn Project!
         </Typography>
 
-        <Typography sx={{ mb: 2 }}>
-          MOOCs – Massive Open Online Courses – promised to democratize
-          education by allowing anyone with a computer and internet
-          connection to learn from anywhere. Unfortunately, most people
-          don’t complete MOOC classes, especially people who are not already
-          highly successful. The Work-Learn Project is investigating how to
-          help people stay engaged and succeed through an incentivized MOOC.
+        <Typography className="home-paragraph" style={{ marginBottom: "16px" }}>
+          MOOCs – Massive Open Online Courses – promised to democratize education by
+          allowing anyone with a computer and internet connection to learn from anywhere.
+          Unfortunately, most people don’t complete MOOC classes, especially people who
+          are not already highly successful. The Work-Learn Project is investigating how
+          to help people stay engaged and succeed through an incentivized MOOC.
         </Typography>
 
-        <Typography>
-          With support from the National Science Foundation (Award #2100355),
-          researchers from the University of Nebraska at Omaha (UNO) and
-          Southern Methodist University (SMU) have partnered with
-          Siena-Francis House to test the Work-Learn Project. Participants
-          learn computational thinking, Python, and COBOL.
+        <Typography className="home-paragraph">
+          With support from the National Science Foundation (Award #2100355), researchers
+          from the University of Nebraska at Omaha (UNO) and Southern Methodist University
+          (SMU) have partnered with Siena-Francis House to test the Work-Learn Project.
+          Participants learn computational thinking, Python, and COBOL.
         </Typography>
       </Box>
     </Box>
   );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.user.user
 });
 
