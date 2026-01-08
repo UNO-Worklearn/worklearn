@@ -60,25 +60,28 @@ function Home({ user }) {
             </Typography>
         )}
 
-          <video
-              ref={videoRef}
-              preload="auto"
-              playsInline
-              muted
-              autoPlay
-              controls={false}
-              disablePictureInPicture
-              controlsList="nodownload noplaybackrate noremoteplayback"
-              onCanPlayThrough={() => setVideoReady(true)}
-              onEnded={handleVideoEnd}
-              onContextMenu={(e) => e.preventDefault()}
-              className={`intro-video ${videoReady ? "show" : ""}`}
-              style={{width: "100%", maxWidth: "800px", borderRadius: "12px"}}
-          >
-            <source src="/videos/IntroProgram.webm" type="video/webm"/>
-
-            Your browser does not support the video tag.
-          </video>
+        <video
+          ref={videoRef}
+          preload="auto"
+          playsInline
+          muted
+          autoPlay
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate noremoteplayback"
+          crossOrigin="anonymous"
+          onCanPlayThrough={() => setVideoReady(true)}
+          onEnded={handleVideoEnd}
+          onContextMenu={(e) => e.preventDefault()}
+          className={`intro-video ${videoReady ? "show" : ""}`}
+          style={{ width: "100%", maxWidth: "800px", borderRadius: "12px" }}
+        >
+          <source
+            src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
 
         {showSignup && (
             <Button
