@@ -18,7 +18,7 @@ function Home({ user }) {
     /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   // -----------------------------------------
-  // Redirect
+  // Redirect if logged in
   // -----------------------------------------
   if (user) {
     return <Navigate to="/dashboard" replace />;
@@ -27,7 +27,19 @@ function Home({ user }) {
   // -----------------------------------------
   // Desktop play handler
   // -----------------------------------------
-  const handlePlayClick = () => {
+  const handleDesktopPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = false;
+    setMuted(false);
+    video.play().catch(() => {});
+  };
+
+  // -----------------------------------------
+  // iOS tap-to-play handler (REQUIRED)
+  // -----------------------------------------
+  const handleIOSPlay = () => {
     const video = videoRef.current;
     if (!video) return;
 
@@ -54,23 +66,26 @@ function Home({ user }) {
   return (
     <Box className="home-container">
       {/* VIDEO SECTION */}
-      <Box className="video-wrapper">
+      <Box
+        className="video-wrapper"
+        sx={{ position: "relative", textAlign: "center" }}
+      >
         {!showSignup && (
           <Typography
             className="watch-message"
-            sx={{ mb: 1, fontStyle: "italic", textAlign: "center" }}
+            sx={{ mb: 1, fontStyle: "italic" }}
           >
             Please watch the full video to unlock sign up.
           </Typography>
         )}
 
-        {/* VIDEO (iOS SAFE) */}
+        {/* VIDEO */}
         <video
           ref={videoRef}
           playsInline
           muted
           preload="auto"
-          controls={isIOS}   /* ✅ REQUIRED FOR iOS */
+          controls={isIOS}   // iOS MUST use native controls
           poster="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/worklearn-videos%3AIntroWorklearn-poster.PNG"
           onPlay={() => setStarted(true)}
           onEnded={handleVideoEnd}
@@ -82,7 +97,7 @@ function Home({ user }) {
           />
         </video>
 
-        {/* CUSTOM PLAY OVERLAY (DESKTOP ONLY) */}
+        {/* DESKTOP PLAY OVERLAY */}
         {!started && !isIOS && (
           <Box
             sx={{
@@ -98,7 +113,7 @@ function Home({ user }) {
             <Button
               variant="contained"
               size="large"
-              onClick={handlePlayClick}
+              onClick={handleDesktopPlay}
               sx={{
                 fontSize: "18px",
                 padding: "12px 28px",
@@ -110,7 +125,36 @@ function Home({ user }) {
           </Box>
         )}
 
-        {/* VOLUME TOGGLE (DESKTOP ONLY) */}
+        {/* iOS TAP-TO-PLAY OVERLAY */}
+        {!started && isIOS && (
+          <Box
+            onClick={handleIOSPlay}
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0,0,0,0.35)",
+              borderRadius: "12px",
+              cursor: "pointer",
+            }}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                fontSize: "18px",
+                padding: "12px 28px",
+                borderRadius: "999px",
+              }}
+            >
+              ▶ Tap to Play
+            </Button>
+          </Box>
+        )}
+
+        {/* DESKTOP VOLUME TOGGLE */}
         {started && !isIOS && (
           <IconButton
             onClick={toggleMute}
