@@ -1,4 +1,5 @@
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, IconButton } from "@mui/material";
+import { VolumeUp, VolumeOff } from "@mui/icons-material";
 import { connect } from "react-redux";
 import React, { useRef, useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
@@ -9,9 +10,10 @@ function Home({ user }) {
 
   const [started, setStarted] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [muted, setMuted] = useState(true);
 
   // -----------------------------------------
-  // Prevent fast-forwarding (safe version)
+  // Prevent fast-forwarding (safe)
   // -----------------------------------------
   useEffect(() => {
     const video = videoRef.current;
@@ -47,10 +49,43 @@ function Home({ user }) {
     return <Navigate to="/dashboard" replace />;
   }
 
+  // -----------------------------------------
+  // Mobile-safe play handler + fullscreen
+  // -----------------------------------------
   const handlePlayClick = () => {
-    if (videoRef.current) {
-      videoRef.current.play();
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = false;
+    video.playsInline = true;
+    setMuted(false);
+
+    // iOS fullscreen fallback
+    if (video.requestFullscreen) {
+      video.requestFullscreen().catch(() => {});
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen();
     }
+
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        video.muted = true;
+        setMuted(true);
+        video.play();
+      });
+    }
+  };
+
+  // -----------------------------------------
+  // Volume toggle
+  // -----------------------------------------
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = !video.muted;
+    setMuted(video.muted);
   };
 
   const handleVideoEnd = () => {
@@ -70,12 +105,12 @@ function Home({ user }) {
           </Typography>
         )}
 
-        {/* Video */}
+        {/* VIDEO */}
         <video
           ref={videoRef}
           playsInline
-          muted={false}
-          preload="auto"
+          muted
+          preload="metadata"
           controls={false}
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
@@ -89,10 +124,9 @@ function Home({ user }) {
             src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
             type="video/mp4"
           />
-          Your browser does not support the video tag.
         </video>
 
-        {/* Play Overlay */}
+        {/* PLAY OVERLAY */}
         {!started && (
           <Box
             sx={{
@@ -120,7 +154,26 @@ function Home({ user }) {
           </Box>
         )}
 
-        {/* Signup Button */}
+        {/* VOLUME TOGGLE */}
+        {started && (
+          <IconButton
+            onClick={toggleMute}
+            sx={{
+              position: "absolute",
+              bottom: 12,
+              right: 12,
+              backgroundColor: "rgba(0,0,0,0.6)",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.8)",
+              },
+            }}
+          >
+            {muted ? <VolumeOff /> : <VolumeUp />}
+          </IconButton>
+        )}
+
+        {/* SIGNUP BUTTON */}
         {showSignup && (
           <Button
             variant="contained"
@@ -141,20 +194,20 @@ function Home({ user }) {
         </Typography>
 
         <Typography className="home-paragraph">
-          MOOCs – Massive Open Online Courses – promised to democratize education
-          by allowing anyone with a computer and internet connection learn from
-          anywhere. Unfortunately, most people don’t complete MOOC classes,
-          especially people who are not already highly successful. The
-          Work-Learn Project is investigating how to help people stay engaged
-          and succeed, through an incentivized MOOC.
+          MOOCs – Massive Open Online Courses – promised to democratize
+          education by allowing anyone with a computer and internet connection
+          learn from anywhere. Unfortunately, most people don’t complete MOOC
+          classes, especially people who are not already highly successful.
+          The Work-Learn Project is investigating how to help people stay
+          engaged and succeed, through an incentivized MOOC.
         </Typography>
 
         <Typography className="home-paragraph">
           With support from the National Science Foundation (Award #2100355),
           researchers from the University of Nebraska at Omaha (UNO) and
           Southern Methodist University (SMU) have partnered with Siena-Francis
-          House to test the Work-Learn Project. Participants learn computational
-          thinking, Python, and COBOL.
+          House to test the Work-Learn Project. Participants learn
+          computational thinking, Python, and COBOL.
         </Typography>
       </Box>
     </Box>
