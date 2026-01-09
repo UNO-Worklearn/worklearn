@@ -1,7 +1,7 @@
 import { Box, Typography, Button, IconButton } from "@mui/material";
 import { VolumeUp, VolumeOff } from "@mui/icons-material";
 import { connect } from "react-redux";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import "./Home.css";
 
@@ -12,52 +12,20 @@ function Home({ user }) {
   const [showSignup, setShowSignup] = useState(false);
   const [muted, setMuted] = useState(true);
 
-  // ✅ iOS detection (Safari + Chrome on iOS)
+  // iOS detection (Safari + Chrome on iOS)
   const isIOS =
     typeof navigator !== "undefined" &&
     /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   // -----------------------------------------
-  // Prevent fast-forwarding (desktop only)
-  // -----------------------------------------
-  useEffect(() => {
-    if (isIOS) return; // ❌ iOS breaks with this logic
-
-    const video = videoRef.current;
-    if (!video) return;
-
-    let lastAllowedTime = 0;
-
-    const onTimeUpdate = () => {
-      if (!video.seeking) {
-        lastAllowedTime = video.currentTime;
-      }
-    };
-
-    const onSeeking = () => {
-      if (video.currentTime > lastAllowedTime + 0.3) {
-        video.currentTime = lastAllowedTime;
-      }
-    };
-
-    video.addEventListener("timeupdate", onTimeUpdate);
-    video.addEventListener("seeking", onSeeking);
-
-    return () => {
-      video.removeEventListener("timeupdate", onTimeUpdate);
-      video.removeEventListener("seeking", onSeeking);
-    };
-  }, [isIOS]);
-
-  // -----------------------------------------
-  // Redirect AFTER hooks
+  // Redirect
   // -----------------------------------------
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
   // -----------------------------------------
-  // Desktop play handler (NOT used on iOS)
+  // Desktop play handler
   // -----------------------------------------
   const handlePlayClick = () => {
     const video = videoRef.current;
@@ -65,15 +33,11 @@ function Home({ user }) {
 
     video.muted = false;
     setMuted(false);
-
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {});
-    }
+    video.play().catch(() => {});
   };
 
   // -----------------------------------------
-  // Volume toggle (desktop only)
+  // Desktop volume toggle
   // -----------------------------------------
   const toggleMute = () => {
     const video = videoRef.current;
@@ -89,7 +53,7 @@ function Home({ user }) {
 
   return (
     <Box className="home-container">
-      {/* Video section */}
+      {/* VIDEO SECTION */}
       <Box className="video-wrapper">
         {!showSignup && (
           <Typography
@@ -100,16 +64,13 @@ function Home({ user }) {
           </Typography>
         )}
 
-        {/* VIDEO */}
+        {/* VIDEO (iOS SAFE) */}
         <video
           ref={videoRef}
           playsInline
           muted
-          preload="metadata"
-
-          /* 🚨 THIS IS THE KEY FIX */
-          controls={isIOS}        // ✅ native controls on iOS
-          
+          preload="auto"
+          controls={isIOS}   /* ✅ REQUIRED FOR iOS */
           poster="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/worklearn-videos%3AIntroWorklearn-poster.PNG"
           onPlay={() => setStarted(true)}
           onEnded={handleVideoEnd}
@@ -179,7 +140,7 @@ function Home({ user }) {
         )}
       </Box>
 
-      {/* Text content */}
+      {/* TEXT CONTENT */}
       <Box className="home-text-section">
         <Typography variant="h4" gutterBottom className="home-title">
           Welcome to the Work-Learn Project!
