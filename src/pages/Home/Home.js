@@ -74,7 +74,7 @@ function Home({ user }) {
         <video
           ref={videoRef}
           playsInline
-          muted
+          muted={false}
           preload="auto"
           controls={false}
           disablePictureInPicture
