@@ -56,32 +56,34 @@ function Home({ user }) {
             Please watch the full video to unlock sign up.
           </Typography>
         )}
+    
+    <video
+      ref={videoRef}
+      preload="auto"
+      playsInline
+      muted
+      autoPlay
+      controls={false}
+      disablePictureInPicture
+      controlsList="nodownload noplaybackrate noremoteplayback"
+      crossOrigin="anonymous"
+      poster="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/worklearn-videos%3AIntroWorklearn-poster.PNG"
+      onEnded={handleVideoEnd}
+      onContextMenu={(e) => e.preventDefault()}
+      className="intro-video"
+      style={{
+        width: "100%",
+        maxWidth: "800px",
+        borderRadius: "12px"
+      }}
+    >
+      <source
+        src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
 
-        <video
-          ref={videoRef}
-          preload="auto"
-          playsInline
-          muted
-          autoPlay
-          controls={false}
-          disablePictureInPicture
-          controlsList="nodownload noplaybackrate noremoteplayback"
-          crossOrigin="anonymous"
-          onEnded={handleVideoEnd}
-          onContextMenu={(e) => e.preventDefault()}
-          className="intro-video"
-          style={{
-            width: "100%",
-            maxWidth: "800px",
-            borderRadius: "12px"
-          }}
-        >
-          <source
-            src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
 
         {showSignup && (
           <Button
