@@ -12,17 +12,10 @@ function Home({ user }) {
   const [showSignup, setShowSignup] = useState(false);
   const [muted, setMuted] = useState(true);
 
-  // ✅ iOS detection (Safari + Chrome on iOS)
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
-
   // -----------------------------------------
-  // Prevent fast-forwarding (desktop only)
+  // Prevent fast-forwarding (safe)
   // -----------------------------------------
   useEffect(() => {
-    if (isIOS) return; // ❌ iOS breaks with this logic
-
     const video = videoRef.current;
     if (!video) return;
 
@@ -47,7 +40,7 @@ function Home({ user }) {
       video.removeEventListener("timeupdate", onTimeUpdate);
       video.removeEventListener("seeking", onSeeking);
     };
-  }, [isIOS]);
+  }, []);
 
   // -----------------------------------------
   // Redirect AFTER hooks
@@ -57,23 +50,35 @@ function Home({ user }) {
   }
 
   // -----------------------------------------
-  // Desktop play handler (NOT used on iOS)
+  // Mobile-safe play handler + fullscreen
   // -----------------------------------------
   const handlePlayClick = () => {
     const video = videoRef.current;
     if (!video) return;
 
     video.muted = false;
+    video.playsInline = true;
     setMuted(false);
+
+    // iOS fullscreen fallback
+    if (video.requestFullscreen) {
+      video.requestFullscreen().catch(() => {});
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen();
+    }
 
     const playPromise = video.play();
     if (playPromise !== undefined) {
-      playPromise.catch(() => {});
+      playPromise.catch(() => {
+        video.muted = true;
+        setMuted(true);
+        video.play();
+      });
     }
   };
 
   // -----------------------------------------
-  // Volume toggle (desktop only)
+  // Volume toggle
   // -----------------------------------------
   const toggleMute = () => {
     const video = videoRef.current;
@@ -106,13 +111,13 @@ function Home({ user }) {
           playsInline
           muted
           preload="metadata"
-
-          /* 🚨 THIS IS THE KEY FIX */
-          controls={isIOS}        // ✅ native controls on iOS
-          
+          controls={false}
+          disablePictureInPicture
+          controlsList="nodownload noplaybackrate noremoteplayback"
           poster="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/worklearn-videos%3AIntroWorklearn-poster.PNG"
           onPlay={() => setStarted(true)}
           onEnded={handleVideoEnd}
+          onContextMenu={(e) => e.preventDefault()}
           className="intro-video"
         >
           <source
@@ -121,8 +126,8 @@ function Home({ user }) {
           />
         </video>
 
-        {/* CUSTOM PLAY OVERLAY (DESKTOP ONLY) */}
-        {!started && !isIOS && (
+        {/* PLAY OVERLAY */}
+        {!started && (
           <Box
             sx={{
               position: "absolute",
@@ -149,8 +154,8 @@ function Home({ user }) {
           </Box>
         )}
 
-        {/* VOLUME TOGGLE (DESKTOP ONLY) */}
-        {started && !isIOS && (
+        {/* VOLUME TOGGLE */}
+        {started && (
           <IconButton
             onClick={toggleMute}
             sx={{
@@ -159,6 +164,9 @@ function Home({ user }) {
               right: 12,
               backgroundColor: "rgba(0,0,0,0.6)",
               color: "white",
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.8)",
+              },
             }}
           >
             {muted ? <VolumeOff /> : <VolumeUp />}
