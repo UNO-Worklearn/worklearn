@@ -12,26 +12,34 @@ function Home({ user }) {
   // Prevent fast-forwarding
   // -----------------------------------------
   useEffect(() => {
-    let lastTime = 0;
+  const video = videoRef.current;
+  if (!video) return;
 
-    const preventSkip = () => {
-      const video = videoRef.current;
-      if (!video) return;
+  let lastAllowedTime = 0;
 
-      if (video.currentTime > lastTime + 0.25) {
-        video.currentTime = lastTime;
-      } else {
-        lastTime = video.currentTime;
-      }
-    };
+  const onTimeUpdate = () => {
+    // Allow normal playback
+    if (!video.seeking) {
+      lastAllowedTime = video.currentTime;
+    }
+  };
 
-    const vid = videoRef.current;
-    if (vid) vid.addEventListener("timeupdate", preventSkip);
+  const onSeeking = () => {
+    // Block skipping forward
+    if (video.currentTime > lastAllowedTime + 0.3) {
+      video.currentTime = lastAllowedTime;
+    }
+  };
 
-    return () => {
-      if (vid) vid.removeEventListener("timeupdate", preventSkip);
-    };
-  }, []);
+  video.addEventListener("timeupdate", onTimeUpdate);
+  video.addEventListener("seeking", onSeeking);
+
+  return () => {
+    video.removeEventListener("timeupdate", onTimeUpdate);
+    video.removeEventListener("seeking", onSeeking);
+  };
+}, []);
+
 
   // -----------------------------------------
   // Redirect AFTER hooks
