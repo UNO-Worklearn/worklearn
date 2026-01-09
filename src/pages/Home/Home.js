@@ -7,10 +7,9 @@ import "./Home.css";
 function Home({ user }) {
   const videoRef = useRef(null);
   const [showSignup, setShowSignup] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
 
   // -----------------------------------------
-  // ✅ Prevent fast-forwarding (MUST RUN BEFORE ANY RETURN)
+  // Prevent fast-forwarding
   // -----------------------------------------
   useEffect(() => {
     let lastTime = 0;
@@ -35,7 +34,7 @@ function Home({ user }) {
   }, []);
 
   // -----------------------------------------
-  // Redirect AFTER all hooks have run
+  // Redirect AFTER hooks
   // -----------------------------------------
   if (user) {
     return <Navigate to="/dashboard" replace />;
@@ -47,17 +46,15 @@ function Home({ user }) {
 
   return (
     <Box className="home-container">
-
-      {/* Video section only for logged-out users */}
-      <Box className="video-wrapper" style={{textAlign: "center"}}>
-
+      {/* Video section */}
+      <Box className="video-wrapper" style={{ textAlign: "center" }}>
         {!showSignup && (
-            <Typography
-                className="watch-message"
-                style={{marginBottom: "10px", fontStyle: "italic"}}
-            >
-              Please watch the full video to unlock sign up.
-            </Typography>
+          <Typography
+            className="watch-message"
+            style={{ marginBottom: "10px", fontStyle: "italic" }}
+          >
+            Please watch the full video to unlock sign up.
+          </Typography>
         )}
 
         <video
@@ -70,11 +67,14 @@ function Home({ user }) {
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
           crossOrigin="anonymous"
-          onLoadedData={() => setVideoReady(true)}
           onEnded={handleVideoEnd}
           onContextMenu={(e) => e.preventDefault()}
-          className={`intro-video ${videoReady ? "show" : ""}`}
-          style={{ width: "100%", maxWidth: "800px", borderRadius: "12px" }}
+          className="intro-video"
+          style={{
+            width: "100%",
+            maxWidth: "800px",
+            borderRadius: "12px"
+          }}
         >
           <source
             src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
@@ -83,22 +83,21 @@ function Home({ user }) {
           Your browser does not support the video tag.
         </video>
 
-
         {showSignup && (
-            <Button
-                variant="contained"
-                color="primary"
-                href="/register"
-                className="signup-button"
-                style={{marginTop: "20px"}}
-            >
-              Create Your Account
-            </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            href="/register"
+            className="signup-button"
+            style={{ marginTop: "20px" }}
+          >
+            Create Your Account
+          </Button>
         )}
       </Box>
 
-      {/* Main text content */}
-      <Box className="home-text-section" style={{paddingTop: "40px"}}>
+      {/* Text content */}
+      <Box className="home-text-section" style={{ paddingTop: "40px" }}>
         <Typography variant="h4" gutterBottom className="home-title">
           Welcome to the Work-Learn Project!
         </Typography>
