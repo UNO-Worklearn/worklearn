@@ -5,11 +5,13 @@
 /* Full page container */
 .home-container {
   padding: 50px;
-  text-align: start;
 }
 
 /* Center wrapper for video section */
 .video-wrapper {
+  position: relative;            /* REQUIRED for overlay */
+  display: inline-block;
+  width: 100%;
   text-align: center;
   margin-bottom: 40px;
 }
@@ -21,20 +23,28 @@
 .intro-video {
   width: 100%;
   max-width: 850px;
+  aspect-ratio: 16 / 9;
+
   border-radius: 12px;
   display: block;
   margin: 0 auto;
 
-  aspect-ratio: 16 / 9;
   background-color: black;
+  object-fit: cover;
 }
 
-
+/* Overlay safety: ensures overlay matches video */
+.video-wrapper > video,
+.video-wrapper > div {
+  max-width: 850px;
+  margin: 0 auto;
+}
 
 /* Message shown before signup unlock */
 .watch-message {
-  margin-top: 10px;
+  margin-bottom: 10px;
   font-style: italic;
+  text-align: center;
 }
 
 /* Signup button */
