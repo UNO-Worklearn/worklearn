@@ -1,16 +1,11 @@
+/* ------------------------------------------------------------------
+   BASE LAYOUT
+------------------------------------------------------------------ */
+
 /* Full page container */
 .home-container {
   padding: 50px;
   text-align: start;
-}
-
-/* Responsive video */
-.intro-video {
-  width: 100%;
-  max-width: 850px;
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto;
 }
 
 /* Center wrapper for video section */
@@ -19,25 +14,42 @@
   margin-bottom: 40px;
 }
 
+/* ------------------------------------------------------------------
+   VIDEO STYLES (GLOBAL – ALL SCREEN SIZES)
+------------------------------------------------------------------ */
+
+.intro-video {
+  width: 100%;
+  max-width: 850px;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+
+  /* Fade-in animation */
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.intro-video.show {
+  opacity: 1;
+}
+
+/* Message shown before signup unlock */
 .watch-message {
   margin-top: 10px;
   font-style: italic;
 }
 
+/* Signup button */
 .signup-button {
   margin-top: 20px !important;
   font-size: 18px !important;
 }
 
-/* Responsive welcome image */
-.dashboard-img {
-  max-width: 100%;
-  height: auto;
-  margin-top: 20px;
-  border-radius: 12px;
-}
+/* ------------------------------------------------------------------
+   TEXT CONTENT
+------------------------------------------------------------------ */
 
-/* Text section */
 .home-text-section {
   padding: 50px 100px;
 }
@@ -51,6 +63,17 @@
   margin-top: 20px;
   font-size: 1rem;
   line-height: 1.6rem;
+}
+
+/* ------------------------------------------------------------------
+   OPTIONAL DASHBOARD IMAGE
+------------------------------------------------------------------ */
+
+.dashboard-img {
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
+  border-radius: 12px;
 }
 
 /* ------------------------------------------------------------------
@@ -78,7 +101,6 @@
   }
 
   .intro-video {
-    width: 100%;
     border-radius: 10px;
   }
 
@@ -100,14 +122,4 @@
   .signup-button {
     font-size: 14px !important;
   }
-
-  .intro-video {
-  opacity: 0;
-  transition: opacity 0.6s ease-in-out;
-}
-
-.intro-video.show {
-  opacity: 1;
-}
-
 }
