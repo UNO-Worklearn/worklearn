@@ -70,7 +70,7 @@ function Home({ user }) {
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
           crossOrigin="anonymous"
-          onCanPlayThrough={() => setVideoReady(true)}
+          onLoadedData={() => setVideoReady(true)}
           onEnded={handleVideoEnd}
           onContextMenu={(e) => e.preventDefault()}
           className={`intro-video ${videoReady ? "show" : ""}`}
@@ -82,6 +82,7 @@ function Home({ user }) {
           />
           Your browser does not support the video tag.
         </video>
+
 
         {showSignup && (
             <Button
