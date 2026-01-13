@@ -138,8 +138,9 @@ const data = [
         
               <hr/>
         
-              <h3 style="font-weight: 700; margin-top: 30px;">Date: 4 Feb 2024</h3>
-              <p>No known issues on this date.</p>
+              <h3 style="font-weight: 700; margin-top: 30px;">Date: 01 Jan 2026</h3>
+              <p><strong>Issue:</strong> Videos are not able to play due to an infrastructure issue. Our team is actively working on a fix.</p>
+              <p><strong>Status:</strong> Under review</p>
         
               <hr/>
         
