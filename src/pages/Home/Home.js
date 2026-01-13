@@ -114,14 +114,14 @@ function Home({ user }) {
           controls={false}
           disablePictureInPicture
           controlsList="nodownload noplaybackrate noremoteplayback"
-          poster="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/worklearn-videos%3AIntroWorklearn-poster.PNG"
+          poster="https://work-learn-bucket.s3.us-east-1.amazonaws.com/IntroWorklearn-poster.PNG"
           onPlay={() => setStarted(true)}
           onEnded={handleVideoEnd}
           onContextMenu={(e) => e.preventDefault()}
           className="intro-video"
         >
           <source
-            src="https://uno-worklearn.s3.us-east-2.amazonaws.com/worklearn-videos/IntroWorklearn.mp4"
+            src="https://work-learn-bucket.s3.us-east-1.amazonaws.com/IntroWorklearn.mp4"
             type="video/mp4"
           />
         </video>
