@@ -6,24 +6,40 @@ function DBContent() {
       sx={{
         textAlign: "left",
         mt: 3,
-        px: { xs: 2, sm: 3, md: 6 }, // responsive horizontal padding
-        py: { xs: 2, sm: 4 },       // responsive vertical padding
+        px: { xs: 2, sm: 3, md: 6 },
+        py: { xs: 2, sm: 4 },
         maxWidth: "100%",
       }}
     >
+      {/* VIDEO */}
       <Box
-        component="img"
-        src="/images/welcome.png"
-        alt="Landing Page"
         sx={{
           width: "100%",
           maxWidth: 720,
-          height: "auto",
-          display: "block",
           mx: "auto",
         }}
-      />
+      >
+        <video
+          playsInline
+          preload="metadata"
+          controls
+          poster="https://work-learn-bucket.s3.us-east-1.amazonaws.com/IntroWorklearn-poster.PNG"
+          style={{
+            width: "100%",
+            height: "auto",
+            display: "block",
+            borderRadius: "8px",
+          }}
+        >
+          <source
+            src="https://work-learn-bucket.s3.us-east-1.amazonaws.com/IntroWorklearn.mp4"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
+      </Box>
 
+      {/* TITLE */}
       <Typography
         variant="h4"
         gutterBottom
@@ -32,6 +48,7 @@ function DBContent() {
         Welcome to the Work-Learn!
       </Typography>
 
+      {/* TEXT */}
       <Typography sx={{ color: "black", mt: 2 }}>
         MOOCs – Massive Open Online Courses – promised to democratize education
         by allowing anyone with a computer and internet connection to learn from
