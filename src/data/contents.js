@@ -38,13 +38,7 @@ const contents = [
                 during the program.
               </li>
             </ol>
-/*
-            <p>
-              We will be on campus at SFH weekly and will make every effort to
-              meet with you in person. If that is not possible, a team member
-              will contact you by email to schedule a virtual meeting.
-            </p>
-*/
+            
             <p>
               Because we value your time, you will receive compensation for
               each of the three meetings you complete with our team.
