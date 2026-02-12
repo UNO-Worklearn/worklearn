@@ -11,7 +11,6 @@ function DBContent() {
         maxWidth: "100%",
       }}
     >
-      {/* VIDEO */}
       <Box
         sx={{
           width: "100%",
@@ -39,7 +38,6 @@ function DBContent() {
         </video>
       </Box>
 
-      {/* TITLE */}
       <Typography
         variant="h4"
         gutterBottom
@@ -48,7 +46,6 @@ function DBContent() {
         Welcome to the Work-Learn!
       </Typography>
 
-      {/* TEXT */}
       <Typography sx={{ color: "black", mt: 2 }}>
         MOOCs – Massive Open Online Courses – promised to democratize education
         by allowing anyone with a computer and internet connection to learn from
