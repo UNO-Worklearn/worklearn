@@ -143,13 +143,13 @@ function Playground() {
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={(e, v) => setValue(v)}>
-            <Tab label="JS / Python" value="1" />
+            <Tab label="Python" value="1" />
             <Tab label="COBOL" value="2" />
             <Tab label="VSCode" value="3" />
           </TabList>
         </Box>
 
-        {/* JS / Python */}
+        {/* Python */}
         <TabPanel value="1">
           <ToastContainer />
 
