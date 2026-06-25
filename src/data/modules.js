@@ -34,13 +34,57 @@ const data = [
           `,
         },
         {
-          id: 2,
-          name: "Link to Slack Channel",
-          content: `
-              <p>This is the link to the Slack Channel:</p>
-              <a style="margin-top: 20px; text-decoration: underline;" target="_blank" href="https://join.slack.com/t/worklearn-workspace/shared_invite/zt-3e743j1sh-89RnamU6oyf9d98AsZbAcg">WorkLearn</a>
-              `,
-        },
+  id: 2,
+  name: "Join the Microsoft Teams Community",
+  content: `
+    <div style="max-width:850px; margin:auto;">
+
+      <p style="font-size:16px; line-height:1.7;">
+        <strong>Welcome to the WorkLearn community!</strong><br><br>
+
+        Microsoft Teams is our primary communication platform where you'll:
+      </p>
+
+      <ul style="line-height:1.8; margin-bottom:25px;">
+        <li>📢 Receive announcements and course updates</li>
+        <li>💬 Ask questions and collaborate with classmates</li>
+        <li>🤝 Connect with instructors and mentors</li>
+        <li>🎯 Participate in discussions and activities</li>
+      </ul>
+
+      <p style="font-size:16px;">
+        After joining the Team, introduce yourself in the
+        <strong>General</strong> channel using a message similar to the example below.
+      </p>
+
+      <div style="text-align:center; margin:30px 0;">
+        <img
+          src="/images/WorkLearn-Teams.png"
+          alt="Microsoft Teams Introduction Example"
+          style="width:100%; max-width:850px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.15);"
+        />
+      </div>
+
+      <div style="
+          background:#f8f9fa;
+          border-left:5px solid #6264A7;
+          padding:18px;
+          border-radius:8px;
+          margin-top:20px;
+      ">
+        <strong>Example Introduction</strong>
+
+        <p style="margin-top:12px;">
+          Hi @Instructor,<br><br>
+
+          My name is <strong>Your Name</strong>, and I just joined the WorkLearn program.
+          I'm excited to be here and look forward to learning and collaborating with everyone!
+        </p>
+      </div>
+
+    </div>
+  `,
+},
         {
           id: 3,
           name: "Payment",
