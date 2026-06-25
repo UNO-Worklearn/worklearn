@@ -33,7 +33,7 @@ const data = [
                 <a target="_blank"  style='text-decoration: underline' href='https://unomaha.az1.qualtrics.com/jfe/form/SV_0wXrZjeZJ6OMYAK' alt='qualtrics survey'>Please complete this Qualtrics Survey</a>
           `,
         },
-        {
+        
 {
   id: 2,
   name: "Microsoft Teams",
