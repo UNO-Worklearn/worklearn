@@ -34,32 +34,47 @@ const data = [
           `,
         },
         {
+{
   id: 2,
-  name: "Join the Microsoft Teams Community",
+  name: "Microsoft Teams",
   content: `
     <div style="max-width:850px; margin:auto;">
 
-      <p style="font-size:16px; line-height:1.7;">
-        <strong>Welcome to the WorkLearn community!</strong><br><br>
+      <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+        <img
+          src="https://raw.githubusercontent.com/UNO-Worklearn/worklearn/main/src/images/Microsoft_Office_Teams_2025%E2%80%93present.png"
+          alt="Microsoft Teams"
+          style="width:48px; height:48px;"
+        />
+        <h2 style="margin:0;">Microsoft Teams</h2>
+      </div>
 
-        Microsoft Teams is our primary communication platform where you'll:
+      <p style="font-size:16px; line-height:1.7;">
+        Microsoft Teams is the primary communication platform for the WorkLearn Program.
+        Throughout the course, you'll use Teams to receive announcements, collaborate with classmates,
+        ask questions, and communicate with instructors.
       </p>
 
-      <ul style="line-height:1.8; margin-bottom:25px;">
-        <li>📢 Receive announcements and course updates</li>
-        <li>💬 Ask questions and collaborate with classmates</li>
-        <li>🤝 Connect with instructors and mentors</li>
-        <li>🎯 Participate in discussions and activities</li>
-      </ul>
+      <div style="
+        background:#F3F6FD;
+        border-left:5px solid #6264A7;
+        padding:18px;
+        border-radius:8px;
+        margin:25px 0;
+      ">
+        <strong>📌 Note</strong><br><br>
+        Microsoft Teams is already installed on every <strong>WorkLearn laptop</strong>.
+        Simply open the Teams application.
+      </div>
 
       <p style="font-size:16px;">
-        After joining the Team, introduce yourself in the
+        After opening the Teams Applicaion introduce yourself in the
         <strong>General</strong> channel using a message similar to the example below.
       </p>
 
       <div style="text-align:center; margin:30px 0;">
         <img
-          src="/images/WorkLearn-Teams.png"
+          src="https://raw.githubusercontent.com/UNO-Worklearn/worklearn/refs/heads/main/src/images/WorkLearn-Teams.png"
           alt="Microsoft Teams Introduction Example"
           style="width:100%; max-width:850px; border-radius:10px; box-shadow:0 8px 20px rgba(0,0,0,.15);"
         />
@@ -70,15 +85,14 @@ const data = [
           border-left:5px solid #6264A7;
           padding:18px;
           border-radius:8px;
-          margin-top:20px;
       ">
         <strong>Example Introduction</strong>
 
         <p style="margin-top:12px;">
-          Hi @Instructor,<br><br>
+          Hi @Magie Hall,<br><br>
 
-          My name is <strong>Your Name</strong>, and I just joined the WorkLearn program.
-          I'm excited to be here and look forward to learning and collaborating with everyone!
+          My name is <strong>Your Name</strong>, and I just joined the WorkLearn Program.
+          I'm excited to be here and look forward to connecting with everyone!.
         </p>
       </div>
 
