@@ -91,15 +91,8 @@ const Quiz = ({
 
         setNewQuestions(filtered);
 
-        /*
-         * selectedOptions contains the answer for EVERY question.
-         *
-         * Single-choice:
-         *   null -> then becomes a number such as 0, 1, 2
-         *
-         * Multi-select:
-         *   starts as []
-         */
+        // Single-choice starts as null.
+        // Multi-select starts as [].
         setSelectedOptions(
           filtered.map((q) =>
             Array.isArray(q.correctAnswer) ? [] : null
@@ -147,10 +140,6 @@ const Quiz = ({
 
     const checked = e.target.checked;
 
-    /*
-     * Get the selections ONLY for this question.
-     * Do not overwrite answers from the other questions.
-     */
     const currentSelections = Array.isArray(userResponsesMC[qIndex])
       ? [...userResponsesMC[qIndex]]
       : [];
@@ -167,26 +156,15 @@ const Quiz = ({
       );
     }
 
-    /*
-     * Update multi-choice state.
-     */
+    // Update only this multi-select question
     setUserResponsesMC((prev) => {
       const updated = [...prev];
       updated[qIndex] = updatedSelections;
       return updated;
     });
 
-    /*
-     * IMPORTANT:
-     * Update ONLY this question inside selectedOptions.
-     *
-     * The previous version did:
-     *
-     * setSelectedOptions(updated);
-     *
-     * where "updated" was userResponsesMC.
-     * That erased all previous single-choice answers.
-     */
+    // IMPORTANT:
+    // Do not overwrite answers from previous questions
     setSelectedOptions((prev) => {
       const updated = [...prev];
       updated[qIndex] = updatedSelections;
@@ -204,10 +182,6 @@ const Quiz = ({
       ? response.includes(optIndex)
       : response === optIndex;
 
-    /*
-     * Before submit:
-     * selected answers are blue
-     */
     if (!submitted) {
       return isSelected ? "#419aff" : "#fff";
     }
@@ -218,18 +192,8 @@ const Quiz = ({
       ? correct.includes(optIndex)
       : correct === optIndex;
 
-    /*
-     * After submit:
-     *
-     * Correct option = green
-     * Selected wrong option = red
-     * Everything else = gray
-     */
     if (isCorrect) return "#00e348";
-
-    if (isSelected && !isCorrect) {
-      return "#ff4141";
-    }
+    if (isSelected && !isCorrect) return "#ff4141";
 
     return "#ddd";
   };
@@ -241,9 +205,7 @@ const Quiz = ({
     selectedOptions.forEach((resp, i) => {
       const correct = correctAnswers[i];
 
-      /*
-       * Single-choice question
-       */
+      // Single-choice
       if (!Array.isArray(correct)) {
         if (resp === correct) {
           rawScore++;
@@ -252,11 +214,7 @@ const Quiz = ({
         return;
       }
 
-      /*
-       * Multi-select question
-       *
-       * Protect against null/undefined.
-       */
+      // Multi-select
       const userAnswers = Array.isArray(resp) ? resp : [];
 
       const sortedUser = [...userAnswers].sort(
@@ -298,7 +256,7 @@ const Quiz = ({
     console.log("Raw score:", rawScore);
     console.log("Percent:", percent);
 
-    /** Update Redux score (local only) */
+    /** Update Redux score */
     const scoreField = typeToField[type];
 
     if (scoreField) {
@@ -328,7 +286,7 @@ const Quiz = ({
       );
     }
 
-    /** Update progress page score in backend */
+    /** Update progress score in backend */
     try {
       await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/api/users/quiz`,
@@ -367,14 +325,10 @@ const Quiz = ({
         questions.map((question, qIndex) => (
           <Box
             key={question._id || qIndex}
-            sx={{
-              marginBottom: "20px",
-            }}
+            sx={{ marginBottom: "20px" }}
           >
             <h6
-              style={{
-                fontWeight: "600",
-              }}
+              style={{ fontWeight: "600" }}
               dangerouslySetInnerHTML={{
                 __html: question.question,
               }}
@@ -390,96 +344,86 @@ const Quiz = ({
 
             <List>
               {!Array.isArray(question.correctAnswer)
-                ? question.options.map(
-                    (opt, optIndex) => (
-                      <ListItem
-                        key={optIndex}
-                        disablePadding
-                      >
-                        <ListItemButton
-                          onClick={() =>
-                            handleOptionClick(
+                ? question.options.map((opt, optIndex) => (
+                    <ListItem
+                      key={optIndex}
+                      disablePadding
+                    >
+                      <ListItemButton
+                        onClick={() =>
+                          handleOptionClick(
+                            qIndex,
+                            optIndex
+                          )
+                        }
+                        sx={{
+                          backgroundColor:
+                            handleBackground(
                               qIndex,
                               optIndex
-                            )
-                          }
-                          sx={{
-                            backgroundColor:
-                              handleBackground(
+                            ),
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                          border: "1px solid #000",
+                        }}
+                        disabled={submitted}
+                      >
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: opt,
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))
+                : question.options.map((opt, optIndex) => (
+                    <ListItem
+                      key={optIndex}
+                      disablePadding
+                    >
+                      <FormControlLabel
+                        sx={{
+                          backgroundColor:
+                            handleBackground(
+                              qIndex,
+                              optIndex
+                            ),
+                          borderRadius: "8px",
+                          marginBottom: "8px",
+                          border: "1px solid #000",
+                          width: "100%",
+                        }}
+                        control={
+                          <Checkbox
+                            checked={
+                              Array.isArray(
+                                selectedOptions[qIndex]
+                              )
+                                ? selectedOptions[
+                                    qIndex
+                                  ].includes(optIndex)
+                                : false
+                            }
+                            disabled={submitted}
+                            onChange={(e) =>
+                              handleCheckboxChange(
+                                e,
                                 qIndex,
                                 optIndex
-                              ),
-                            borderRadius: "8px",
-                            marginBottom: "8px",
-                            border:
-                              "1px solid #000",
-                          }}
-                          disabled={submitted}
-                        >
+                              )
+                            }
+                          />
+                        }
+                        label={
                           <div
                             dangerouslySetInnerHTML={{
                               __html: opt,
                             }}
                           />
-                        </ListItemButton>
-                      </ListItem>
-                    )
-                  )
-                : question.options.map(
-                    (opt, optIndex) => (
-                      <ListItem
-                        key={optIndex}
-                        disablePadding
-                      >
-                        <FormControlLabel
-                          sx={{
-                            backgroundColor:
-                              handleBackground(
-                                qIndex,
-                                optIndex
-                              ),
-                            borderRadius: "8px",
-                            marginBottom: "8px",
-                            border:
-                              "1px solid #000",
-                            width: "100%",
-                          }}
-                          control={
-                            <Checkbox
-                              checked={
-                                Array.isArray(
-                                  selectedOptions[
-                                    qIndex
-                                  ]
-                                )
-                                  ? selectedOptions[
-                                      qIndex
-                                    ].includes(
-                                      optIndex
-                                    )
-                                  : false
-                              }
-                              disabled={submitted}
-                              onChange={(e) =>
-                                handleCheckboxChange(
-                                  e,
-                                  qIndex,
-                                  optIndex
-                                )
-                              }
-                            />
-                          }
-                          label={
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: opt,
-                              }}
-                            />
-                          }
-                        />
-                      </ListItem>
-                    )
-                  )}
+                        }
+                      />
+                    </ListItem>
+                  ))}
             </List>
           </Box>
         ))
@@ -500,9 +444,7 @@ const Quiz = ({
           submitted ||
           questions.length === 0
         }
-        sx={{
-          marginTop: "20px",
-        }}
+        sx={{ marginTop: "20px" }}
       >
         Submit Quiz
       </Button>
@@ -511,9 +453,7 @@ const Quiz = ({
         <>
           <Typography
             variant="h6"
-            sx={{
-              marginTop: "20px",
-            }}
+            sx={{ marginTop: "20px" }}
           >
             Your Score: {score} /{" "}
             {questions.length}
